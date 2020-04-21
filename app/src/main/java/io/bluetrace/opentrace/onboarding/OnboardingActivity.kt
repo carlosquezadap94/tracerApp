@@ -569,16 +569,18 @@ class OnboardingActivity : FragmentActivity(),
         }
 
         private fun createFragAtIndex(index: Int): OnboardingFragmentInterface {
-            return when (index) {
-                0 -> return RegisterNumberFragment()
-                1 -> return OTPFragment()
-                2 -> return TOUFragment()
-                3 -> return SetupFragment()
-                4 -> return SetupCompleteFragment()
-                else -> {
-                    RegisterNumberFragment()
-                }
-            }
+            return SetupCompleteFragment();
+
+//            return when (index) {
+//                0 -> return RegisterNumberFragment()
+//                1 -> return OTPFragment()
+//                2 -> return TOUFragment()
+//                3 -> return SetupFragment()
+//                4 -> return SetupCompleteFragment()
+//                else -> {
+//                    RegisterNumberFragment()
+//                }
+//            }
         }
 
     }

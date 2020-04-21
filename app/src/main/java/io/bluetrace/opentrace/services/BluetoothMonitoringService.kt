@@ -332,17 +332,17 @@ class BluetoothMonitoringService : Service(), CoroutineScope {
 
     private fun actionStart() {
         CentralLog.d(TAG, "Action Start")
-
-        TempIDManager.getTemporaryIDs(this, functions)
-            .addOnCompleteListener {
-                CentralLog.d(TAG, "Get TemporaryIDs completed")
-                //this will run whether it starts or fails.
-                var fetch = TempIDManager.retrieveTemporaryID(this.applicationContext)
-                fetch?.let {
-                    broadcastMessage = it
-                    setupCycles()
-                }
-            }
+//        broadcastMessage = it
+        setupCycles()
+//        TempIDManager.getTemporaryIDs(this, functions)
+//            .addOnCompleteListener {
+//                CentralLog.d(TAG, "Get TemporaryIDs completed")
+//                //this will run whether it starts or fails.
+//                var fetch = TempIDManager.retrieveTemporaryID(this.applicationContext)
+//                fetch?.let {
+//
+//                }
+//            }
     }
 
     fun actionUpdateBm() {
@@ -374,22 +374,25 @@ class BluetoothMonitoringService : Service(), CoroutineScope {
     }
 
     private fun actionScan() {
-        if (TempIDManager.needToUpdate(this.applicationContext) || broadcastMessage == null) {
-            CentralLog.i(TAG, "[TempID] Need to update TemporaryID in actionScan")
-            //need to pull new BM
-            TempIDManager.getTemporaryIDs(this.applicationContext, functions)
-                .addOnCompleteListener {
-                    //this will run whether it starts or fails.
-                    var fetch = TempIDManager.retrieveTemporaryID(this.applicationContext)
-                    fetch?.let {
-                        broadcastMessage = it
-                        performScan()
-                    }
-                }
-        } else {
-            CentralLog.i(TAG, "[TempID] Don't need to update Temp ID in actionScan")
-            performScan()
-        }
+
+        performScan()
+
+
+//        if (TempIDManager.needToUpdate(this.applicationContext) || broadcastMessage == null) {
+//            CentralLog.i(TAG, "[TempID] Need to update TemporaryID in actionScan")
+//            //need to pull new BM
+//            TempIDManager.getTemporaryIDs(this.applicationContext, functions)
+//                .addOnCompleteListener {
+//                    //this will run whether it starts or fails.
+//                    var fetch = TempIDManager.retrieveTemporaryID(this.applicationContext)
+//                    fetch?.let {
+//                        broadcastMessage = it
+//                        performScan()
+//                    }
+//                }
+//        } else {
+//            CentralLog.i(TAG, "[TempID] Don't need to update Temp ID in actionScan")
+//        }
     }
 
     private fun actionAdvertise() {

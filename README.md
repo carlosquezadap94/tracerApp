@@ -12,7 +12,7 @@ The OpenTrace reference implementation comprises:
 
 ## Setup of the app
 To get started on the app, setup and configure the following:
-1. ./gradle.properties
+1. ./perties
 2. ./app/build.gradle
 3. Firebase - google-services.json
 4. Remote configs

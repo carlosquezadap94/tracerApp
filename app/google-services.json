@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "150139070794",
+    "firebase_url": "https://coronapp-fb938.firebaseio.com",
+    "project_id": "coronapp-fb938",
+    "storage_bucket": "coronapp-fb938.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:150139070794:android:744e9a553144a5f209b9b3",
+        "android_client_info": {
+          "package_name": "io.bluetrace.opentrace.stg"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "150139070794-h4klgblqpbg6jcoqpssmgtb5dp7tquec.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCfDAptahnNXQwxkEgOjYzWtq2nOna2O80"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "150139070794-h4klgblqpbg6jcoqpssmgtb5dp7tquec.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
