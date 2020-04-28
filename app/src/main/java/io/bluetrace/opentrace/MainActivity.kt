@@ -1,18 +1,24 @@
 package io.bluetrace.opentrace
 
+import android.annotation.SuppressLint
 import android.app.ActivityManager
 import android.content.Context
 import android.os.Bundle
+import android.provider.Settings
+import android.provider.Settings.Secure
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.iid.FirebaseInstanceId
-import kotlinx.android.synthetic.main.activity_main_new.*
 import io.bluetrace.opentrace.fragment.ForUseByOTCFragment
 import io.bluetrace.opentrace.fragment.HomeFragment
+import io.bluetrace.opentrace.fragment.UploadFragment
 import io.bluetrace.opentrace.logging.CentralLog
+import kotlinx.android.synthetic.main.activity_main_new.*
+import java.security.AccessController.getContext
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -22,10 +28,10 @@ class MainActivity : AppCompatActivity() {
     private var mNavigationLevel = 0
     var LAYOUT_MAIN_ID = 0
     private var selected = 0
+    @SuppressLint("HardwareIds")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_new)
-
         Utils.startBluetoothMonitoringService(this)
 
         LAYOUT_MAIN_ID = R.id.content
@@ -47,8 +53,8 @@ class MainActivity : AppCompatActivity() {
                     R.id.navigation_upload -> {
                         if (selected != R.id.navigation_upload) {
                             openFragment(
-                                LAYOUT_MAIN_ID, ForUseByOTCFragment(),
-                                ForUseByOTCFragment::class.java.name, 0
+                                LAYOUT_MAIN_ID, UploadFragment(),
+                                UploadFragment::class.java.name, 0
                             )
                         }
 
@@ -119,4 +125,8 @@ class MainActivity : AppCompatActivity() {
             e.printStackTrace()
         }
     }
+
+
+
+
 }
