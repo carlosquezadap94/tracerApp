@@ -25,15 +25,12 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import pub.devrel.easypermissions.EasyPermissions
 import io.bluetrace.opentrace.BuildConfig
-import io.bluetrace.opentrace.Preference
 import io.bluetrace.opentrace.Utils
 import io.bluetrace.opentrace.bluetooth.BLEAdvertiser
 import io.bluetrace.opentrace.bluetooth.gatt.ACTION_RECEIVED_STATUS
 import io.bluetrace.opentrace.bluetooth.gatt.ACTION_RECEIVED_STREETPASS
 import io.bluetrace.opentrace.bluetooth.gatt.STATUS
 import io.bluetrace.opentrace.bluetooth.gatt.STREET_PASS
-import io.bluetrace.opentrace.idmanager.TempIDManager
-import io.bluetrace.opentrace.idmanager.TemporaryID
 import io.bluetrace.opentrace.logging.CentralLog
 import io.bluetrace.opentrace.notifications.NotificationTemplates
 import io.bluetrace.opentrace.permissions.RequestFileWritePermission
@@ -79,14 +76,64 @@ class BluetoothMonitoringService : Service(), CoroutineScope {
 
     private lateinit var localBroadcastManager: LocalBroadcastManager
 
-    private lateinit var firebaseAnalytics: FirebaseAnalytics
-    private lateinit var auth: FirebaseAuth
-
     private var notificationShown: NOTIFICATION_STATE? = null
 
     override fun onCreate() {
         localBroadcastManager = LocalBroadcastManager.getInstance(this)
         setup()
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        CentralLog.i(TAG, "Service onStartCommand")
+
+        //check for permissions
+        if (!hasLocationPermissions() || !isBluetoothEnabled()) {
+            CentralLog.i(
+                TAG,
+                "location permission: ${hasLocationPermissions()} bluetooth: ${isBluetoothEnabled()}"
+            )
+            notifyLackingThings()
+            return START_STICKY
+        }
+
+        //check for write permissions  - not required for now. SDLog maybe?
+        //only required for debug builds - for now
+        if (BuildConfig.DEBUG) {
+            if (!hasWritePermissions()) {
+                CentralLog.i(TAG, "no write permission")
+                //start write permission activity
+                acquireWritePermission()
+                stopSelf()
+                return START_STICKY
+            }
+        }
+
+        intent?.let {
+            val cmd = intent.getIntExtra(COMMAND_KEY, Command.INVALID.index)
+            runService(Command.findByValue(cmd))
+
+            return START_STICKY
+        }
+
+        if (intent == null) {
+            CentralLog.e(TAG, "WTF? Nothing in intent @ onStartCommand")
+//            Utils.startBluetoothMonitoringService(applicationContext)
+            commandHandler.startBluetoothMonitoringService()
+        }
+
+        // Tells the system to not try to recreate the service after it has been killed.
+        return START_STICKY
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        CentralLog.i(TAG, "BluetoothMonitoringService destroyed - tearing down")
+        stopService()
+        CentralLog.i(TAG, "BluetoothMonitoringService destroyed")
+    }
+
+    override fun onBind(intent: Intent?): IBinder? {
+        return null
     }
 
     fun setup() {
@@ -109,7 +156,6 @@ class BluetoothMonitoringService : Service(), CoroutineScope {
 
         setupNotifications()
         functions = FirebaseFunctions.getInstance(BuildConfig.FIREBASE_REGION)
-        broadcastMessage = TempIDManager.retrieveTemporaryID(this.applicationContext)
     }
 
     fun teardown() {
@@ -194,47 +240,6 @@ class BluetoothMonitoringService : Service(), CoroutineScope {
         return btOn
     }
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        CentralLog.i(TAG, "Service onStartCommand")
-
-        //check for permissions
-        if (!hasLocationPermissions() || !isBluetoothEnabled()) {
-            CentralLog.i(
-                TAG,
-                "location permission: ${hasLocationPermissions()} bluetooth: ${isBluetoothEnabled()}"
-            )
-            notifyLackingThings()
-            return START_STICKY
-        }
-
-        //check for write permissions  - not required for now. SDLog maybe?
-        //only required for debug builds - for now
-        if (BuildConfig.DEBUG) {
-            if (!hasWritePermissions()) {
-                CentralLog.i(TAG, "no write permission")
-                //start write permission activity
-                acquireWritePermission()
-                stopSelf()
-                return START_STICKY
-            }
-        }
-
-        intent?.let {
-            val cmd = intent.getIntExtra(COMMAND_KEY, Command.INVALID.index)
-            runService(Command.findByValue(cmd))
-
-            return START_STICKY
-        }
-
-        if (intent == null) {
-            CentralLog.e(TAG, "WTF? Nothing in intent @ onStartCommand")
-//            Utils.startBluetoothMonitoringService(applicationContext)
-            commandHandler.startBluetoothMonitoringService()
-        }
-
-        // Tells the system to not try to recreate the service after it has been killed.
-        return START_STICKY
-    }
 
     fun runService(cmd: Command?) {
 
@@ -292,7 +297,6 @@ class BluetoothMonitoringService : Service(), CoroutineScope {
 
             Command.ACTION_UPDATE_BM -> {
                 Utils.scheduleBMUpdateCheck(this.applicationContext, bmCheckInterval)
-                actionUpdateBm()
             }
 
             Command.ACTION_STOP -> {
@@ -321,7 +325,6 @@ class BluetoothMonitoringService : Service(), CoroutineScope {
     }
 
     private fun actionHealthCheck() {
-        performUserLoginCheck()
         performHealthCheck()
         Utils.scheduleRepeatingPurge(this.applicationContext, purgeInterval)
     }
@@ -345,29 +348,6 @@ class BluetoothMonitoringService : Service(), CoroutineScope {
 //            }
     }
 
-    fun actionUpdateBm() {
-
-        if (TempIDManager.needToUpdate(this.applicationContext) || broadcastMessage == null) {
-            CentralLog.i(TAG, "[TempID] Need to update TemporaryID in actionUpdateBM")
-            //need to pull new BM
-            TempIDManager.getTemporaryIDs(this, functions)
-                .addOnCompleteListener {
-                    //this will run whether it starts or fails.
-                    var fetch = TempIDManager.retrieveTemporaryID(this.applicationContext)
-                    fetch?.let {
-                        CentralLog.i(TAG, "[TempID] Updated Temp ID")
-                        broadcastMessage = it
-                    }
-
-                    if (fetch == null) {
-                        CentralLog.e(TAG, "[TempID] Failed to fetch new Temp ID")
-                    }
-                }
-        } else {
-            CentralLog.i(TAG, "[TempID] Don't need to update Temp ID in actionUpdateBM")
-        }
-
-    }
 
     fun calcPhaseShift(min: Long, max: Long): Long {
         return (min + (Math.random() * (max - min))).toLong()
@@ -474,21 +454,7 @@ class BluetoothMonitoringService : Service(), CoroutineScope {
         }
     }
 
-    private fun performUserLoginCheck() {
-        firebaseAnalytics = FirebaseAnalytics.getInstance(applicationContext)
-        auth = FirebaseAuth.getInstance()
-        val currentUser: FirebaseUser? = auth.currentUser
-        if (currentUser == null && Preference.isOnBoarded(this)) {
-            CentralLog.d(TAG, "User is not login but has completed onboarding")
-            val bundle = Bundle()
-            bundle.putString(FirebaseAnalytics.Param.ITEM_ID, "Android")
-            bundle.putString(
-                FirebaseAnalytics.Param.ITEM_NAME,
-                "Have not login yet but in main activity"
-            )
-            firebaseAnalytics.logEvent(FirebaseAnalytics.Event.LOGIN, bundle)
-        }
-    }
+
 
     private fun performHealthCheck() {
 
@@ -543,16 +509,9 @@ class BluetoothMonitoringService : Service(), CoroutineScope {
 
             streetPassRecordStorage.purgeOldRecords(before)
             statusRecordStorage.purgeOldRecords(before)
-            Preference.putLastPurgeTime(context, System.currentTimeMillis())
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        CentralLog.i(TAG, "BluetoothMonitoringService destroyed - tearing down")
-        stopService()
-        CentralLog.i(TAG, "BluetoothMonitoringService destroyed")
-    }
 
     private fun stopService() {
         teardown()
@@ -598,9 +557,6 @@ class BluetoothMonitoringService : Service(), CoroutineScope {
         }
     }
 
-    override fun onBind(intent: Intent?): IBinder? {
-        return null
-    }
 
     inner class BluetoothStatusReceiver : BroadcastReceiver() {
 
@@ -729,7 +685,6 @@ class BluetoothMonitoringService : Service(), CoroutineScope {
         val PENDING_BM_UPDATE = 11
         val PENDING_PURGE_CODE = 12
 
-        var broadcastMessage: TemporaryID? = null
 
         //should be more than advertising gap?
         val scanDuration: Long = BuildConfig.SCAN_DURATION

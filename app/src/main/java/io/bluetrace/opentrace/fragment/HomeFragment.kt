@@ -7,17 +7,12 @@ import android.content.*
 import android.os.Build
 import android.os.Bundle
 import android.os.PowerManager
-import android.text.Spannable
-import android.text.method.LinkMovementMethod
-import android.text.style.URLSpan
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.text.HtmlCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
@@ -31,7 +26,7 @@ import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions
 import io.bluetrace.opentrace.*
 import io.bluetrace.opentrace.logging.CentralLog
-import io.bluetrace.opentrace.onboarding.OnboardingActivity
+import io.bluetrace.opentrace.principal.StartActivity
 import io.bluetrace.opentrace.status.persistence.StatusRecord
 import io.bluetrace.opentrace.streetpass.persistence.StreetPassRecordDatabase
 
@@ -62,8 +57,6 @@ class HomeFragment : Fragment() {
 
         showSetup()
 
-        Preference.registerListener(activity!!.applicationContext, listener)
-        showNonEmptyAnnouncement()
     }
 
     override fun onCreateView(
@@ -72,7 +65,6 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_home, container, false)
-        Preference.registerListener(activity!!.applicationContext, listener)
 
         return view
     }
@@ -84,15 +76,9 @@ class HomeFragment : Fragment() {
         animation_view.setOnClickListener {
             if (BuildConfig.DEBUG && ++counter == 2) {
                 counter = 0
-                var intent = Intent(context, PeekActivity::class.java)
-                context?.startActivity(intent)
             }
         }
-        btn_restart_app_setup.setOnClickListener {
-            var intent = Intent(context, OnboardingActivity::class.java)
-            intent.putExtra("page", 3)
-            context?.startActivity(intent)
-        }
+
 
         btn_announcement_close.setOnClickListener {
             clearAndHideAnnouncement()
@@ -151,11 +137,11 @@ class HomeFragment : Fragment() {
             //location permission
             val perms = Utils.getRequiredPermissions()
             iv_location.isSelected =
-                EasyPermissions.hasPermissions(activity as MainActivity, *perms)
+                EasyPermissions.hasPermissions(activity as StartActivity, *perms)
 
             //push notification
             iv_push.isSelected =
-                NotificationManagerCompat.from(activity as MainActivity).areNotificationsEnabled()
+                NotificationManagerCompat.from(activity as StartActivity).areNotificationsEnabled()
 
             bluetoothAdapter?.let {
                 iv_bluetooth.isSelected = !it.isDisabled
@@ -163,8 +149,8 @@ class HomeFragment : Fragment() {
 
             //battery ignore list
             val powerManager =
-                (activity as MainActivity).getSystemService(AppCompatActivity.POWER_SERVICE) as PowerManager
-            val packageName = (activity as MainActivity).packageName
+                (activity as StartActivity).getSystemService(AppCompatActivity.POWER_SERVICE) as PowerManager
+            val packageName = (activity as StartActivity).packageName
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 battery_card_view.visibility = View.VISIBLE
@@ -193,7 +179,6 @@ class HomeFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        Preference.unregisterListener(activity!!.applicationContext, listener)
         lastKnownScanningStarted.removeObservers(viewLifecycleOwner)
     }
 
@@ -226,7 +211,7 @@ class HomeFragment : Fragment() {
 
     private val bluetoothAdapter: BluetoothAdapter? by lazy(LazyThreadSafetyMode.NONE) {
         val bluetoothManager =
-            (activity as MainActivity).getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
+            (activity as StartActivity).getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
         bluetoothManager.adapter
     }
 
@@ -248,7 +233,7 @@ class HomeFragment : Fragment() {
     fun setupPermissionsAndSettings() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val perms = Utils.getRequiredPermissions()
-            if (EasyPermissions.hasPermissions(activity as MainActivity, *perms)) {
+            if (EasyPermissions.hasPermissions(activity as StartActivity, *perms)) {
                 // Already have permission, do the thing
             } else {
                 // Do not have permissions, request them now
@@ -285,44 +270,10 @@ class HomeFragment : Fragment() {
         showSetup()
     }
 
-    private var listener: SharedPreferences.OnSharedPreferenceChangeListener =
-        SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
-            when (key) {
-                "ANNOUNCEMENT" -> showNonEmptyAnnouncement()
-            }
-        }
+
 
     private fun clearAndHideAnnouncement() {
         view_announcement.isVisible = false
-        Preference.putAnnouncement(activity!!.applicationContext, "")
     }
 
-    private fun showNonEmptyAnnouncement() {
-        val new = Preference.getAnnouncement(activity!!.applicationContext)
-        if (new.isEmpty()) return
-        CentralLog.d(TAG, "FCM Announcement Changed to $new!")
-        tv_announcement.text = HtmlCompat.fromHtml(new, HtmlCompat.FROM_HTML_MODE_COMPACT)
-        tv_announcement.movementMethod = object : LinkMovementMethod() {
-            override fun onTouchEvent(
-                widget: TextView?,
-                buffer: Spannable?,
-                event: MotionEvent?
-            ): Boolean {
-                if (event?.action == MotionEvent.ACTION_UP && widget != null && buffer != null) {
-                    val x = event.x - widget.totalPaddingLeft + widget.scrollX
-                    val y = event.y - widget.totalPaddingTop + widget.scrollY
-                    val layout = widget.layout
-                    val line = layout.getLineForVertical(y.toInt())
-                    val off = layout.getOffsetForHorizontal(line, x)
-
-                    val link: Array<out URLSpan> = buffer.getSpans(off, off, URLSpan::class.java)
-                    if (link.isNotEmpty()) {
-                        clearAndHideAnnouncement()
-                    }
-                }
-                return super.onTouchEvent(widget, buffer, event)
-            }
-        }
-        view_announcement.isVisible = true
-    }
 }

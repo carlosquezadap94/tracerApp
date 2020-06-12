@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.SystemClock
-import io.bluetrace.opentrace.Preference
 import io.bluetrace.opentrace.logging.CentralLog
 
 object Scheduler {
@@ -39,32 +38,6 @@ object Scheduler {
             )
         }
 
-    }
-
-    fun scheduleRepeatingServiceIntent(
-        requestCode: Int,
-        context: Context,
-        intent: Intent,
-        intervalMillis: Long
-    ) {
-        val alarmMgr = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val alarmIntent = PendingIntent.getService(
-            context,
-            requestCode,
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT
-        )
-
-        CentralLog.d(
-            TAG,
-            "Purging alarm set to ${Preference.getLastPurgeTime(context) + intervalMillis}"
-        )
-        alarmMgr.setRepeating(
-            AlarmManager.RTC,
-            Preference.getLastPurgeTime(context) + intervalMillis,
-            intervalMillis,
-            alarmIntent
-        )
     }
 
     fun cancelServiceIntent(requestCode: Int, context: Context, intent: Intent) {

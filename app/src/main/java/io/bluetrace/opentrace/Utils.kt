@@ -233,12 +233,6 @@ object Utils {
             BluetoothMonitoringService.Command.ACTION_PURGE.index
         )
 
-        Scheduler.scheduleRepeatingServiceIntent(
-            PENDING_PURGE_CODE,
-            context,
-            nextIntent,
-            intervalMillis
-        )
     }
 
     fun broadcastDeviceScanned(
@@ -331,20 +325,5 @@ object Utils {
                 bluetoothAdapter.isEnabled && bluetoothAdapter.state == BluetoothAdapter.STATE_ON
     }
 
-    fun getHandShakePin(
-        context: Context,
-        functions: FirebaseFunctions
-    ): Task<HttpsCallableResult> {
-        return functions
-            .getHttpsCallable("getHandshakePin")
-            .call()
-            .addOnSuccessListener {
-                val result: HashMap<String, Any> = it.data as HashMap<String, Any>
-                val handShakePin = result["pin"].toString()
-                Preference.putHandShakePin(context, handShakePin)
-                CentralLog.d(TAG, "Result from handshake pin: " + result.toString())
-            }.addOnFailureListener { e ->
-                CentralLog.w(TAG, "get handshake pin (failure): ${e.message}")
-            }
-    }
+
 }
