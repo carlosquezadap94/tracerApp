@@ -12,11 +12,7 @@ import android.provider.Settings
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import com.google.android.gms.tasks.Task
-import com.google.firebase.functions.FirebaseFunctions
-import com.google.firebase.functions.HttpsCallableResult
 import io.bluetrace.opentrace.bluetooth.gatt.*
-import io.bluetrace.opentrace.logging.CentralLog
 import io.bluetrace.opentrace.scheduler.Scheduler
 import io.bluetrace.opentrace.services.BluetoothMonitoringService
 import io.bluetrace.opentrace.services.BluetoothMonitoringService.Companion.PENDING_ADVERTISE_REQ_CODE
@@ -272,7 +268,7 @@ object Utils {
     }
 
     fun readFromInternalStorage(context: Context, fileName: String): String {
-        CentralLog.d(TAG, "Reading from internal storage")
+
         val fileInputStream: FileInputStream
         var text: String? = null
         val stringBuilder: StringBuilder = StringBuilder()
@@ -281,14 +277,12 @@ object Utils {
         val bufferedReader: BufferedReader = BufferedReader(inputStreamReader)
         try {
             while ({ text = bufferedReader.readLine(); text }() != null) {
-                CentralLog.d(TAG, "Text: " + text)
                 stringBuilder.append(text)
             }
 
             bufferedReader.close()
 
         } catch (e: Throwable) {
-            CentralLog.e(TAG, "Failed to readFromInternalStorage: ${e.message}")
         }
         return stringBuilder.toString()
     }

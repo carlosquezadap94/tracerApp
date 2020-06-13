@@ -7,7 +7,6 @@ import android.os.Build
 import android.os.Handler
 import io.bluetrace.opentrace.Utils
 import io.bluetrace.opentrace.bluetooth.BLEScanner
-import io.bluetrace.opentrace.logging.CentralLog
 import io.bluetrace.opentrace.services.BluetoothMonitoringService.Companion.infiniteScanning
 import io.bluetrace.opentrace.status.Status
 import kotlin.properties.Delegates
@@ -51,7 +50,7 @@ class StreetPassScanner constructor(
                 , scanDurationInMillis)
         }
 
-        CentralLog.d(TAG, "scanning started")
+
 //        discoverer.startDiscovery()
     }
 
@@ -95,7 +94,6 @@ class StreetPassScanner constructor(
 
                 var connectable = ConnectablePeripheral(manuString, txPower, rssi)
 
-                CentralLog.i(TAG, "Scanned: ${manuString} - ${device.address}")
 
                 Utils.broadcastDeviceScanned(context, device, connectable)
             }
@@ -118,7 +116,6 @@ class StreetPassScanner constructor(
                     "$errorCode - UNDOCUMENTED"
                 }
             }
-            CentralLog.e(TAG, "BT Scan failed: $reason")
             if (scannerCount > 0) {
                 scannerCount--
             }

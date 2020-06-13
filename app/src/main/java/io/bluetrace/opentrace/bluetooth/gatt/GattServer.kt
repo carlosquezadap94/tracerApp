@@ -5,7 +5,6 @@ import android.bluetooth.BluetoothGatt.GATT_FAILURE
 import android.bluetooth.BluetoothGatt.GATT_SUCCESS
 import android.content.Context
 import io.bluetrace.opentrace.Utils
-import io.bluetrace.opentrace.logging.CentralLog
 import io.bluetrace.opentrace.protocol.BlueTrace
 import java.util.*
 import kotlin.properties.Delegates
@@ -34,15 +33,12 @@ class GattServer constructor(val context: Context, serviceUUIDString: String) {
         override fun onConnectionStateChange(device: BluetoothDevice?, status: Int, newState: Int) {
             when (newState) {
                 BluetoothProfile.STATE_CONNECTED -> {
-                    CentralLog.i(TAG, "${device?.address} Connected to local GATT server")
                 }
 
                 BluetoothProfile.STATE_DISCONNECTED -> {
-                    CentralLog.i(TAG, "${device?.address} Disconnected from local GATT server.")
                 }
 
                 else -> {
-                    CentralLog.i(TAG, "Connection status: $newState - ${device?.address}")
                 }
             }
         }
@@ -56,12 +52,10 @@ class GattServer constructor(val context: Context, serviceUUIDString: String) {
         ) {
 
             if (device == null) {
-                CentralLog.w(TAG, "No device")
             }
 
             device?.let {
 
-                CentralLog.i(TAG, "onCharacteristicReadRequest from ${device.address}")
 
                 if (BlueTrace.supportsCharUUID(characteristic?.uuid)) {
 
@@ -85,7 +79,6 @@ class GattServer constructor(val context: Context, serviceUUIDString: String) {
                     }
 
                 } else {
-                    CentralLog.i(TAG, "unsupported characteristic UUID from ${device.address}")
                     bluetoothGattServer?.sendResponse(device, requestId, GATT_FAILURE, 0, null)
                 }
             }
@@ -103,19 +96,10 @@ class GattServer constructor(val context: Context, serviceUUIDString: String) {
         ) {
 
             if (device == null) {
-                CentralLog.e(TAG, "Write stopped - no device")
             }
 
             device?.let {
-                CentralLog.i(
-                    TAG,
-                    "onCharacteristicWriteRequest - ${device.address} - preparedWrite: $preparedWrite"
-                )
 
-                CentralLog.i(
-                    TAG,
-                    "onCharacteristicWriteRequest from ${device.address} - $requestId - $offset"
-                )
 
                 if (BlueTrace.supportsCharUUID(characteristic.uuid)) {
                     deviceCharacteristicMap[device.address] = characteristic.uuid
@@ -123,10 +107,7 @@ class GattServer constructor(val context: Context, serviceUUIDString: String) {
                     value?.let {
                         valuePassed = String(value, Charsets.UTF_8)
                     }
-                    CentralLog.i(
-                        TAG,
-                        "onCharacteristicWriteRequest from ${device.address} - $valuePassed"
-                    )
+
                     if (value != null) {
                         var dataBuffer = writeDataPayload[device.address]
 
@@ -137,16 +118,9 @@ class GattServer constructor(val context: Context, serviceUUIDString: String) {
                         dataBuffer = dataBuffer.plus(value)
                         writeDataPayload[device.address] = dataBuffer
 
-                        CentralLog.i(
-                            TAG,
-                            "Accumulated characteristic: ${String(
-                                dataBuffer,
-                                Charsets.UTF_8
-                            )}"
-                        )
+
 
                         if (preparedWrite && responseNeeded) {
-                            CentralLog.i(TAG, "Sending response offset: ${dataBuffer.size}")
                             bluetoothGattServer?.sendResponse(
                                 device,
                                 requestId,
@@ -158,10 +132,7 @@ class GattServer constructor(val context: Context, serviceUUIDString: String) {
 
                         //ios has this flag to false
                         if (!preparedWrite) {
-                            CentralLog.i(
-                                TAG,
-                                "onCharacteristicWriteRequest - ${device.address} - preparedWrite: $preparedWrite"
-                            )
+
 
                             saveDataReceived(device)
 
@@ -177,7 +148,7 @@ class GattServer constructor(val context: Context, serviceUUIDString: String) {
                         }
                     }
                 } else {
-                    CentralLog.i(TAG, "unsupported characteristic UUID from ${device.address}")
+
 
                     if (responseNeeded) {
                         bluetoothGattServer?.sendResponse(
@@ -203,13 +174,7 @@ class GattServer constructor(val context: Context, serviceUUIDString: String) {
             data.let { dataBuffer ->
 
                 if (dataBuffer != null) {
-                    CentralLog.i(
-                        TAG,
-                        "onExecuteWrite - $requestId- ${device.address} - ${String(
-                            dataBuffer,
-                            Charsets.UTF_8
-                        )}"
-                    )
+
                     saveDataReceived(device)
                     bluetoothGattServer?.sendResponse(
                         device,
@@ -255,7 +220,7 @@ class GattServer constructor(val context: Context, serviceUUIDString: String) {
                             }
                         }
                     } catch (e: Throwable) {
-                        CentralLog.e(TAG, "Failed to process write payload - ${e.message}")
+
                     }
 
                     Utils.broadcastDeviceProcessed(context, device.address)
@@ -287,7 +252,7 @@ class GattServer constructor(val context: Context, serviceUUIDString: String) {
             bluetoothGattServer?.clearServices()
             bluetoothGattServer?.close()
         } catch (e: Throwable) {
-            CentralLog.e(TAG, "GATT server can't be closed elegantly ${e.localizedMessage}")
+
         }
     }
 

@@ -1,7 +1,6 @@
 package io.bluetrace.opentrace.protocol.v2
 
 import io.bluetrace.opentrace.TracerApp
-import io.bluetrace.opentrace.logging.CentralLog
 import io.bluetrace.opentrace.protocol.BlueTraceProtocol
 import io.bluetrace.opentrace.protocol.CentralInterface
 import io.bluetrace.opentrace.protocol.PeripheralInterface
@@ -48,7 +47,6 @@ class V2Peripheral : PeripheralInterface {
                 txPower = null
             )
         } catch (e: Throwable) {
-            CentralLog.e(TAG, "Failed to deserialize write payload ${e.message}")
         }
         return null
     }
@@ -97,7 +95,6 @@ class V2Central : CentralInterface {
             )
             return connectionRecord
         } catch (e: Throwable) {
-            CentralLog.e(TAG, "Failed to deserialize read payload ${e.message}")
         }
 
         return null

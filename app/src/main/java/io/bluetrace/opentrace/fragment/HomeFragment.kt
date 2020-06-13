@@ -25,7 +25,6 @@ import kotlinx.android.synthetic.main.fragment_home.*
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions
 import io.bluetrace.opentrace.*
-import io.bluetrace.opentrace.logging.CentralLog
 import io.bluetrace.opentrace.principal.StartActivity
 import io.bluetrace.opentrace.status.persistence.StatusRecord
 import io.bluetrace.opentrace.streetpass.persistence.StreetPassRecordDatabase
@@ -94,9 +93,7 @@ class HomeFragment : Fragment() {
             .addOnCompleteListener(activity as Activity) { task ->
                 if (task.isSuccessful) {
                     val updated = task.result
-                    CentralLog.d(TAG, "Remote config fetch - success: $updated")
                 } else {
-                    CentralLog.d(TAG, "Remote config fetch - failed")
                 }
             }
     }
@@ -156,10 +153,8 @@ class HomeFragment : Fragment() {
                 battery_card_view.visibility = View.VISIBLE
                 if (!powerManager.isIgnoringBatteryOptimizations(packageName)) {
                     iv_battery.isSelected = false
-                    CentralLog.d(TAG, "Not on Battery Optimization whitelist")
                 } else {
                     iv_battery.isSelected = true
-                    CentralLog.d(TAG, "On Battery Optimization whitelist")
                 }
             } else {
                 battery_card_view.visibility = View.GONE
@@ -260,7 +255,6 @@ class HomeFragment : Fragment() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        CentralLog.d(TAG, "[onRequestPermissionsResult]requestCode $requestCode")
         when (requestCode) {
             PERMISSION_REQUEST_ACCESS_LOCATION -> {
                 iv_location.isSelected = permissions.isNotEmpty()

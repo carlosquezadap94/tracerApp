@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.SystemClock
-import io.bluetrace.opentrace.logging.CentralLog
 
 object Scheduler {
     const val TAG = "Scheduler"

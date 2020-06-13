@@ -8,7 +8,6 @@ import android.bluetooth.le.ScanSettings
 import android.content.Context
 import android.os.ParcelUuid
 import io.bluetrace.opentrace.Utils
-import io.bluetrace.opentrace.logging.CentralLog
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.properties.Delegates
@@ -61,13 +60,10 @@ class BLEScanner constructor(context: Context, uuid: String, reportDelay: Long) 
         try {
             if (scanCallback != null && Utils.isBluetoothAvailable()) { //fixed crash if BT if turned off, stop scan will crash.
                 scanner?.stopScan(scanCallback)
-                CentralLog.d(TAG, "scanning stopped")
+
             }
         } catch (e: Throwable) {
-            CentralLog.e(
-                TAG,
-                "unable to stop scanning - callback null or bluetooth off? : ${e.localizedMessage}"
-            )
+
         }
     }
 }

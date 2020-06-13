@@ -5,7 +5,6 @@ import android.bluetooth.BluetoothGatt
 import android.content.Context
 import android.os.Build
 import com.google.gson.Gson
-import io.bluetrace.opentrace.logging.CentralLog
 import kotlin.properties.Delegates
 
 class Work constructor(
@@ -49,7 +48,7 @@ class Work constructor(
         }
 
         if (gatt == null) {
-            CentralLog.e(TAG, "Unable to connect to ${device.address}")
+
         }
     }
 

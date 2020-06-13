@@ -11,13 +11,9 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
-import android.os.Bundle
 import android.os.IBinder
 import android.os.PowerManager
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.functions.FirebaseFunctions
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -31,7 +27,6 @@ import io.bluetrace.opentrace.bluetooth.gatt.ACTION_RECEIVED_STATUS
 import io.bluetrace.opentrace.bluetooth.gatt.ACTION_RECEIVED_STREETPASS
 import io.bluetrace.opentrace.bluetooth.gatt.STATUS
 import io.bluetrace.opentrace.bluetooth.gatt.STREET_PASS
-import io.bluetrace.opentrace.logging.CentralLog
 import io.bluetrace.opentrace.notifications.NotificationTemplates
 import io.bluetrace.opentrace.permissions.RequestFileWritePermission
 import io.bluetrace.opentrace.status.Status
@@ -84,14 +79,11 @@ class BluetoothMonitoringService : Service(), CoroutineScope {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        CentralLog.i(TAG, "Service onStartCommand")
+
 
         //check for permissions
         if (!hasLocationPermissions() || !isBluetoothEnabled()) {
-            CentralLog.i(
-                TAG,
-                "location permission: ${hasLocationPermissions()} bluetooth: ${isBluetoothEnabled()}"
-            )
+
             notifyLackingThings()
             return START_STICKY
         }
@@ -100,7 +92,7 @@ class BluetoothMonitoringService : Service(), CoroutineScope {
         //only required for debug builds - for now
         if (BuildConfig.DEBUG) {
             if (!hasWritePermissions()) {
-                CentralLog.i(TAG, "no write permission")
+
                 //start write permission activity
                 acquireWritePermission()
                 stopSelf()
@@ -116,7 +108,7 @@ class BluetoothMonitoringService : Service(), CoroutineScope {
         }
 
         if (intent == null) {
-            CentralLog.e(TAG, "WTF? Nothing in intent @ onStartCommand")
+
 //            Utils.startBluetoothMonitoringService(applicationContext)
             commandHandler.startBluetoothMonitoringService()
         }
@@ -127,9 +119,7 @@ class BluetoothMonitoringService : Service(), CoroutineScope {
 
     override fun onDestroy() {
         super.onDestroy()
-        CentralLog.i(TAG, "BluetoothMonitoringService destroyed - tearing down")
         stopService()
-        CentralLog.i(TAG, "BluetoothMonitoringService destroyed")
     }
 
     override fun onBind(intent: Intent?): IBinder? {
@@ -139,11 +129,11 @@ class BluetoothMonitoringService : Service(), CoroutineScope {
     fun setup() {
         val pm = getSystemService(Context.POWER_SERVICE) as PowerManager
 
-        CentralLog.setPowerManager(pm)
+
 
         commandHandler = CommandHandler(WeakReference(this))
 
-        CentralLog.d(TAG, "Creating service - BluetoothMonitoringService")
+
         serviceUUID = BuildConfig.BLE_SSID
 
         worker = StreetPassWorker(this.applicationContext)
@@ -244,14 +234,10 @@ class BluetoothMonitoringService : Service(), CoroutineScope {
     fun runService(cmd: Command?) {
 
         var doWork = true
-        CentralLog.i(TAG, "Command is:${cmd?.string}")
 
         //check for permissions
         if (!hasLocationPermissions() || !isBluetoothEnabled()) {
-            CentralLog.i(
-                TAG,
-                "location permission: ${hasLocationPermissions()} bluetooth: ${isBluetoothEnabled()}"
-            )
+
             notifyLackingThings()
             return
         }
@@ -260,7 +246,7 @@ class BluetoothMonitoringService : Service(), CoroutineScope {
         //only required for debug builds - for now
         if (BuildConfig.DEBUG) {
             if (!hasWritePermissions()) {
-                CentralLog.i(TAG, "no write permission")
+
                 //start write permission activity
                 acquireWritePermission()
                 stopSelf()
@@ -314,14 +300,13 @@ class BluetoothMonitoringService : Service(), CoroutineScope {
                 actionPurge()
             }
 
-            else -> CentralLog.i(TAG, "Invalid / ignored command: $cmd. Nothing to do")
+            else ->{}
         }
     }
 
     private fun actionStop() {
         stopForeground(true)
         stopSelf()
-        CentralLog.w(TAG, "Service Stopping")
     }
 
     private fun actionHealthCheck() {
@@ -334,7 +319,6 @@ class BluetoothMonitoringService : Service(), CoroutineScope {
     }
 
     private fun actionStart() {
-        CentralLog.d(TAG, "Action Start")
 //        broadcastMessage = it
         setupCycles()
 //        TempIDManager.getTemporaryIDs(this, functions)
@@ -380,7 +364,6 @@ class BluetoothMonitoringService : Service(), CoroutineScope {
         if (isBluetoothEnabled()) {
             advertiser?.startAdvertising(advertisingDuration)
         } else {
-            CentralLog.w(TAG, "Unable to start advertising, bluetooth is off")
         }
     }
 
@@ -446,11 +429,9 @@ class BluetoothMonitoringService : Service(), CoroutineScope {
                 if (!scanner.isScanning()) {
                     scanner.startScan()
                 } else {
-                    CentralLog.e(TAG, "Already scanning!")
                 }
             }
         } else {
-            CentralLog.w(TAG, "Unable to start scan - bluetooth is off")
         }
     }
 
@@ -458,10 +439,9 @@ class BluetoothMonitoringService : Service(), CoroutineScope {
 
     private fun performHealthCheck() {
 
-        CentralLog.i(TAG, "Performing self diagnosis")
+
 
         if (!hasLocationPermissions() || !isBluetoothEnabled()) {
-            CentralLog.i(TAG, "no location permission")
             notifyLackingThings(true)
             return
         }
@@ -473,29 +453,22 @@ class BluetoothMonitoringService : Service(), CoroutineScope {
 
         if (!infiniteScanning) {
             if (!commandHandler.hasScanScheduled()) {
-                CentralLog.w(TAG, "Missing Scan Schedule - rectifying")
                 commandHandler.scheduleNextScan(100)
             } else {
-                CentralLog.w(TAG, "Scan Schedule present")
             }
         } else {
-            CentralLog.w(TAG, "Should be operating under infinite scan mode")
         }
 
         if (!infiniteAdvertising) {
             if (!commandHandler.hasAdvertiseScheduled()) {
-                CentralLog.w(TAG, "Missing Advertise Schedule - rectifying")
+
 //                setupAdvertisingCycles()
                 commandHandler.scheduleNextAdvertise(100)
             } else {
-                CentralLog.w(
-                    TAG,
-                    "Advertise Schedule present. Should be advertising?:  ${advertiser?.shouldBeAdvertising
-                        ?: false}. Is Advertising?: ${advertiser?.isAdvertising ?: false}"
-                )
+
             }
         } else {
-            CentralLog.w(TAG, "Should be operating under infinite advertise mode")
+
         }
 
 
@@ -505,7 +478,7 @@ class BluetoothMonitoringService : Service(), CoroutineScope {
         val context = this
         launch {
             val before = System.currentTimeMillis() - purgeTTL
-            CentralLog.i(TAG, "Coroutine - Purging of data before epoch time $before")
+
 
             streetPassRecordStorage.purgeOldRecords(before)
             statusRecordStorage.purgeOldRecords(before)
@@ -534,26 +507,24 @@ class BluetoothMonitoringService : Service(), CoroutineScope {
         val bluetoothStatusReceivedFilter = IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED)
         registerReceiver(bluetoothStatusReceiver, bluetoothStatusReceivedFilter)
 
-        CentralLog.i(TAG, "Receivers registered")
     }
 
     private fun unregisterReceivers() {
         try {
             localBroadcastManager.unregisterReceiver(streetPassReceiver)
         } catch (e: Throwable) {
-            CentralLog.w(TAG, "streetPassReceiver is not registered?")
         }
 
         try {
             localBroadcastManager.unregisterReceiver(statusReceiver)
         } catch (e: Throwable) {
-            CentralLog.w(TAG, "statusReceiver is not registered?")
+
         }
 
         try {
             unregisterReceiver(bluetoothStatusReceiver)
         } catch (e: Throwable) {
-            CentralLog.w(TAG, "bluetoothStatusReceiver is not registered?")
+
         }
     }
 
@@ -568,18 +539,18 @@ class BluetoothMonitoringService : Service(), CoroutineScope {
 
                     when (state) {
                         BluetoothAdapter.STATE_TURNING_OFF -> {
-                            CentralLog.d(TAG, "BluetoothAdapter.STATE_TURNING_OFF")
+
                             notifyLackingThings()
                             teardown()
                         }
                         BluetoothAdapter.STATE_OFF -> {
-                            CentralLog.d(TAG, "BluetoothAdapter.STATE_OFF")
+
                         }
                         BluetoothAdapter.STATE_TURNING_ON -> {
-                            CentralLog.d(TAG, "BluetoothAdapter.STATE_TURNING_ON")
+
                         }
                         BluetoothAdapter.STATE_ON -> {
-                            CentralLog.d(TAG, "BluetoothAdapter.STATE_ON")
+
                             Utils.startBluetoothMonitoringService(this@BluetoothMonitoringService.applicationContext)
                         }
                     }
@@ -596,10 +567,7 @@ class BluetoothMonitoringService : Service(), CoroutineScope {
 
             if (ACTION_RECEIVED_STREETPASS == intent.action) {
                 var connRecord: ConnectionRecord = intent.getParcelableExtra(STREET_PASS)
-                CentralLog.d(
-                    TAG,
-                    "StreetPass received: $connRecord"
-                )
+
 
                 if (connRecord.msg.isNotEmpty()) {
                     val record = StreetPassRecord(
@@ -613,10 +581,7 @@ class BluetoothMonitoringService : Service(), CoroutineScope {
                     )
 
                     launch {
-                        CentralLog.d(
-                            TAG,
-                            "Coroutine - Saving StreetPassRecord: ${Utils.getDate(record.timestamp)}"
-                        )
+
                         streetPassRecordStorage.saveRecord(record)
                     }
                 }
@@ -631,7 +596,6 @@ class BluetoothMonitoringService : Service(), CoroutineScope {
 
             if (ACTION_RECEIVED_STATUS == intent.action) {
                 var statusRecord: Status = intent.getParcelableExtra(STATUS)
-                CentralLog.d(TAG, "Status received: ${statusRecord.msg}")
 
                 if (statusRecord.msg.isNotEmpty()) {
                     val statusRecord = StatusRecord(statusRecord.msg)
@@ -693,21 +657,15 @@ class BluetoothMonitoringService : Service(), CoroutineScope {
 
         val advertisingDuration: Long = BuildConfig.ADVERTISING_DURATION
         val advertisingGap: Long = BuildConfig.ADVERTISING_INTERVAL
-
         val maxQueueTime: Long = BuildConfig.MAX_QUEUE_TIME
         val bmCheckInterval: Long = BuildConfig.BM_CHECK_INTERVAL
         val healthCheckInterval: Long = BuildConfig.HEALTH_CHECK_INTERVAL
         val purgeInterval: Long = BuildConfig.PURGE_INTERVAL
         val purgeTTL: Long = BuildConfig.PURGE_TTL
-
         val connectionTimeout: Long = BuildConfig.CONNECTION_TIMEOUT
-
         val blacklistDuration: Long = BuildConfig.BLACKLIST_DURATION
-
         val infiniteScanning = false
         val infiniteAdvertising = false
-
         val useBlacklist = true
-        val bmValidityCheck = false
     }
 }

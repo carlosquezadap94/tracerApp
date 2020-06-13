@@ -7,7 +7,6 @@ import android.bluetooth.le.AdvertiseSettings
 import android.bluetooth.le.BluetoothLeAdvertiser
 import android.os.Handler
 import android.os.ParcelUuid
-import io.bluetrace.opentrace.logging.CentralLog
 import io.bluetrace.opentrace.services.BluetoothMonitoringService.Companion.infiniteAdvertising
 import java.util.*
 
@@ -21,8 +20,6 @@ class BLEAdvertiser constructor(val serviceUUID: String) {
     private var callback: AdvertiseCallback = object : AdvertiseCallback() {
         override fun onStartSuccess(settingsInEffect: AdvertiseSettings) {
             super.onStartSuccess(settingsInEffect)
-            CentralLog.i(TAG, "Advertising onStartSuccess")
-            CentralLog.i(TAG, settingsInEffect.toString())
             isAdvertising = true
         }
 
@@ -59,7 +56,6 @@ class BLEAdvertiser constructor(val serviceUUID: String) {
                 }
             }
 
-            CentralLog.d(TAG, "Advertising onStartFailure: $errorCode - $reason")
         }
     }
     val pUuid = ParcelUuid(UUID.fromString(serviceUUID))
@@ -76,7 +72,6 @@ class BLEAdvertiser constructor(val serviceUUID: String) {
     var handler = Handler()
 
     var stopRunnable: Runnable = Runnable {
-        CentralLog.i(TAG, "Advertising stopping as scheduled.")
         stopAdvertising()
     }
 
@@ -89,7 +84,6 @@ class BLEAdvertiser constructor(val serviceUUID: String) {
 
         val randomUUID = UUID.randomUUID().toString()
         val finalString = randomUUID.substring(randomUUID.length - charLength, randomUUID.length)
-        CentralLog.d(TAG, "Unique string: $finalString")
         val serviceDataByteArray = finalString.toByteArray()
 
         data = AdvertiseData.Builder()
@@ -100,11 +94,9 @@ class BLEAdvertiser constructor(val serviceUUID: String) {
             .build()
 
         try {
-            CentralLog.d(TAG, "Start advertising")
             advertiser = advertiser ?: BluetoothAdapter.getDefaultAdapter().bluetoothLeAdvertiser
             advertiser?.startAdvertising(settings, data, callback)
         } catch (e: Throwable) {
-            CentralLog.e(TAG, "Failed to start advertising legacy: ${e.message}")
         }
 
         if (!infiniteAdvertising) {
@@ -120,10 +112,8 @@ class BLEAdvertiser constructor(val serviceUUID: String) {
 
     fun stopAdvertising() {
         try {
-            CentralLog.d(TAG, "stop advertising")
             advertiser?.stopAdvertising(callback)
         } catch (e: Throwable) {
-            CentralLog.e(TAG, "Failed to stop advertising: ${e.message}")
         }
         shouldBeAdvertising = false
         handler.removeCallbacksAndMessages(null)

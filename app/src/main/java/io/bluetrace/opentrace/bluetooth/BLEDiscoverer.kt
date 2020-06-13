@@ -11,7 +11,6 @@ import android.content.IntentFilter
 import android.os.Build
 import android.os.ParcelUuid
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import io.bluetrace.opentrace.logging.CentralLog
 import java.util.*
 import kotlin.properties.Delegates
 
@@ -49,7 +48,6 @@ class BLEDiscoverer constructor(context: Context, serviceUUIDString: String) {
         try {
             localBroadcastManager.unregisterReceiver(mDiscoveryReceiver)
         } catch (e: Throwable) {
-            CentralLog.e(TAG, "Already unregistered workReceiver? ${e.message}")
         }
     }
 
@@ -59,7 +57,7 @@ class BLEDiscoverer constructor(context: Context, serviceUUIDString: String) {
             // When discovery finds a device
             when (action) {
                 BluetoothAdapter.ACTION_DISCOVERY_STARTED -> {
-                    CentralLog.i(TAG, "Discovery started")
+
                 }
                 BluetoothDevice.ACTION_FOUND -> {
                     val device: BluetoothDevice =
@@ -67,10 +65,10 @@ class BLEDiscoverer constructor(context: Context, serviceUUIDString: String) {
                     val rssi =
                         intent.getShortExtra(BluetoothDevice.EXTRA_RSSI, java.lang.Short.MIN_VALUE)
 
-                    CentralLog.i(TAG, "Scanned Device address: ${device.address} @ $rssi")
+
 
                     if (device.uuids == null) {
-                        CentralLog.w(TAG, "Nope. No uuids cached for address: " + device.address)
+
                     }
 
 //                    if(device.uuids.contains(serviceUUID)){
@@ -79,7 +77,7 @@ class BLEDiscoverer constructor(context: Context, serviceUUIDString: String) {
 
                 }
                 BluetoothAdapter.ACTION_DISCOVERY_FINISHED -> {
-                    CentralLog.i(TAG, "Discovery ended")
+
                 }
 
                 else -> {
