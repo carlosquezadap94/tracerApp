@@ -6,7 +6,6 @@ import android.app.NotificationManager
 import android.app.Service
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
@@ -25,18 +24,17 @@ import io.bluetrace.opentrace.Utils
 import io.bluetrace.opentrace.bluetooth.BLEAdvertiser
 import io.bluetrace.opentrace.bluetooth.gatt.ACTION_RECEIVED_STATUS
 import io.bluetrace.opentrace.bluetooth.gatt.ACTION_RECEIVED_STREETPASS
-import io.bluetrace.opentrace.bluetooth.gatt.STATUS
-import io.bluetrace.opentrace.bluetooth.gatt.STREET_PASS
 import io.bluetrace.opentrace.notifications.NotificationTemplates
-import io.bluetrace.opentrace.persistence.status.Status
-import io.bluetrace.opentrace.persistence.status.StatusRecord
 import io.bluetrace.opentrace.persistence.status.StatusRecordStorage
-import io.bluetrace.opentrace.streetpass.ConnectionRecord
 import io.bluetrace.opentrace.streetpass.StreetPassScanner
 import io.bluetrace.opentrace.streetpass.StreetPassServer
 import io.bluetrace.opentrace.streetpass.StreetPassWorker
-import io.bluetrace.opentrace.persistence.streetpass.StreetPassRecord
 import io.bluetrace.opentrace.persistence.streetpass.StreetPassRecordStorage
+import io.bluetrace.opentrace.services.broadcast.BluetoothStatusReceiver
+import io.bluetrace.opentrace.services.broadcast.StatusReceiver
+import io.bluetrace.opentrace.services.broadcast.StreetPassReceiver
+import io.bluetrace.opentrace.services.enums.Command
+import io.bluetrace.opentrace.services.enums.NOTIFICATION_STATE
 import java.lang.ref.WeakReference
 import kotlin.coroutines.CoroutineContext
 
@@ -431,7 +429,7 @@ class BluetoothMonitoringService : Service(), CoroutineScope {
         if (!infiniteAdvertising) {
             if (!commandHandler.hasAdvertiseScheduled()) {
 
-//                setupAdvertisingCycles()
+                //setupAdvertisingCycles()
                 commandHandler.scheduleNextAdvertise(100)
             } else {
 
@@ -498,108 +496,7 @@ class BluetoothMonitoringService : Service(), CoroutineScope {
     }
 
 
-    inner class BluetoothStatusReceiver : BroadcastReceiver() {
 
-        override fun onReceive(context: Context?, intent: Intent?) {
-            intent?.let {
-                val action = intent.action
-                if (action == BluetoothAdapter.ACTION_STATE_CHANGED) {
-                    var state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, -1)
-
-                    when (state) {
-                        BluetoothAdapter.STATE_TURNING_OFF -> {
-
-                            notifyLackingThings()
-                            teardown()
-                        }
-                        BluetoothAdapter.STATE_OFF -> {
-
-                        }
-                        BluetoothAdapter.STATE_TURNING_ON -> {
-
-                        }
-                        BluetoothAdapter.STATE_ON -> {
-
-                            Utils.startBluetoothMonitoringService(this@BluetoothMonitoringService.applicationContext)
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    inner class StreetPassReceiver : BroadcastReceiver() {
-
-        private val TAG = "StreetPassReceiver"
-
-        override fun onReceive(context: Context, intent: Intent) {
-
-            if (ACTION_RECEIVED_STREETPASS == intent.action) {
-                var connRecord: ConnectionRecord = intent.getParcelableExtra(STREET_PASS)
-
-
-                if (connRecord.msg.isNotEmpty()) {
-                    val record =
-                        StreetPassRecord(
-                            v = connRecord.version,
-                            msg = connRecord.msg,
-                            org = connRecord.org,
-                            modelP = connRecord.peripheral.modelP,
-                            modelC = connRecord.central.modelC,
-                            rssi = connRecord.rssi,
-                            txPower = connRecord.txPower
-                        )
-
-                    launch {
-
-                        streetPassRecordStorage.saveRecord(record)
-                    }
-                }
-            }
-        }
-    }
-
-    inner class StatusReceiver : BroadcastReceiver() {
-        private val TAG = "StatusReceiver"
-
-        override fun onReceive(context: Context, intent: Intent) {
-
-            if (ACTION_RECEIVED_STATUS == intent.action) {
-                var statusRecord: Status = intent.getParcelableExtra(STATUS)
-
-                if (statusRecord.msg.isNotEmpty()) {
-                    val statusRecord =
-                        StatusRecord(
-                            statusRecord.msg
-                        )
-                    launch {
-                        statusRecordStorage.saveRecord(statusRecord)
-                    }
-                }
-            }
-        }
-    }
-
-    enum class Command(val index: Int, val string: String) {
-        INVALID(-1, "INVALID"),
-        ACTION_START(0, "START"),
-        ACTION_SCAN(1, "SCAN"),
-        ACTION_STOP(2, "STOP"),
-        ACTION_ADVERTISE(3, "ADVERTISE"),
-        ACTION_SELF_CHECK(4, "SELF_CHECK"),
-        ACTION_UPDATE_BM(5, "UPDATE_BM"),
-        ACTION_PURGE(6, "PURGE");
-
-        companion object {
-            private val types = values().associate { it.index to it }
-            fun findByValue(value: Int) = types[value]
-        }
-    }
-
-    enum class NOTIFICATION_STATE() {
-        RUNNING,
-        LACKING_THINGS
-    }
 
     companion object {
 
