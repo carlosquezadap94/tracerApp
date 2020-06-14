@@ -25,6 +25,7 @@ import io.bluetrace.opentrace.bluetooth.BLEAdvertiser
 import io.bluetrace.opentrace.bluetooth.gatt.ACTION_RECEIVED_STATUS
 import io.bluetrace.opentrace.bluetooth.gatt.ACTION_RECEIVED_STREETPASS
 import io.bluetrace.opentrace.listeners.BluetoothStatusListener
+import io.bluetrace.opentrace.listeners.StorageListener
 import io.bluetrace.opentrace.notifications.NotificationTemplates
 import io.bluetrace.opentrace.persistence.status.StatusRecordStorage
 import io.bluetrace.opentrace.streetpass.StreetPassScanner
@@ -39,7 +40,8 @@ import io.bluetrace.opentrace.services.enums.NotificationState
 import java.lang.ref.WeakReference
 import kotlin.coroutines.CoroutineContext
 
-class BluetoothMonitoringService : Service(), CoroutineScope, BluetoothStatusListener {
+class BluetoothMonitoringService : Service(), CoroutineScope, BluetoothStatusListener,
+    StorageListener {
 
     private var mNotificationManager: NotificationManager? = null
 
@@ -534,5 +536,13 @@ class BluetoothMonitoringService : Service(), CoroutineScope, BluetoothStatusLis
 
     override fun onNotifyLackingThings() {
         notifyLackingThings()
+    }
+
+    override fun onStatusRecordStorage() {
+        TODO("Not yet implemented")
+    }
+
+    override fun onStreetPassRecordStorage() {
+        TODO("Not yet implemented")
     }
 }

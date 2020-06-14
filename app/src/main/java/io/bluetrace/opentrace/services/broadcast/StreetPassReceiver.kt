@@ -5,13 +5,15 @@ import android.content.Context
 import android.content.Intent
 import io.bluetrace.opentrace.bluetooth.gatt.ACTION_RECEIVED_STREETPASS
 import io.bluetrace.opentrace.bluetooth.gatt.STREET_PASS
+import io.bluetrace.opentrace.listeners.StorageListener
 import io.bluetrace.opentrace.persistence.streetpass.StreetPassRecord
 import io.bluetrace.opentrace.streetpass.ConnectionRecord
 import kotlinx.coroutines.launch
 
-class StreetPassReceiver : BroadcastReceiver() {
+class StreetPassReceiver(listener : StorageListener) : BroadcastReceiver() {
 
     private val TAG = "StreetPassReceiver"
+    private val listener : StorageListener = listener
 
     override fun onReceive(context: Context, intent: Intent) {
 
@@ -33,7 +35,7 @@ class StreetPassReceiver : BroadcastReceiver() {
 
                 launch {
 
-                    streetPassRecordStorage.saveRecord(record)
+                    listener.onStreetPassRecordStorage(record)
                 }
             }
         }
