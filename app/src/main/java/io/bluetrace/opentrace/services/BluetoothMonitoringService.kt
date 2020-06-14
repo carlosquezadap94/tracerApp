@@ -98,7 +98,6 @@ class BluetoothMonitoringService : Service(), CoroutineScope, BluetoothStatusLis
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
-
         //check for permissions
         if (!hasLocationPermissions() || !isBluetoothEnabled()) {
 
@@ -143,7 +142,7 @@ class BluetoothMonitoringService : Service(), CoroutineScope, BluetoothStatusLis
         return null
     }
 
-    fun setup() {
+    private fun setup() {
         val pm = getSystemService(Context.POWER_SERVICE) as PowerManager
 
 
@@ -169,7 +168,7 @@ class BluetoothMonitoringService : Service(), CoroutineScope, BluetoothStatusLis
         functions = FirebaseFunctions.getInstance(BuildConfig.FIREBASE_REGION)
     }
 
-    fun teardown() {
+    private fun teardown() {
         streetPassServer?.tearDown()
         streetPassServer = null
 
@@ -232,7 +231,6 @@ class BluetoothMonitoringService : Service(), CoroutineScope, BluetoothStatusLis
         return EasyPermissions.hasPermissions(this.applicationContext, *perms)
     }
 
-
     private fun isBluetoothEnabled(): Boolean {
         var btOn = false
         val bluetoothAdapter: BluetoothAdapter? by lazy(LazyThreadSafetyMode.NONE) {
@@ -245,7 +243,6 @@ class BluetoothMonitoringService : Service(), CoroutineScope, BluetoothStatusLis
         }
         return btOn
     }
-
 
     fun runService(cmd: Command?) {
 

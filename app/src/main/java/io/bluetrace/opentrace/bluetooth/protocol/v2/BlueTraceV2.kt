@@ -16,8 +16,6 @@ class BlueTraceV2 : BlueTraceProtocol(
 
 class V2Peripheral : PeripheralInterface {
 
-    private val TAG = "V2Peripheral"
-
     override fun prepareReadRequestData(protocolVersion: Int): ByteArray {
         return V2ReadRequestPayload(
             v = protocolVersion,
@@ -28,13 +26,13 @@ class V2Peripheral : PeripheralInterface {
     }
 
     override fun processWriteRequestDataReceived(
-        dataReceived: ByteArray,
+        dataWritten: ByteArray,
         centralAddress: String
     ): ConnectionRecord? {
         try {
             val dataWritten =
                 V2WriteRequestPayload.fromPayload(
-                    dataReceived
+                    dataWritten
                 )
 
             return ConnectionRecord(
@@ -53,8 +51,6 @@ class V2Peripheral : PeripheralInterface {
 }
 
 class V2Central : CentralInterface {
-
-    private val TAG = "V2Central"
 
     override fun prepareWriteRequestData(
         protocolVersion: Int,
@@ -84,7 +80,7 @@ class V2Central : CentralInterface {
             var peripheral =
                 PeripheralDevice(readData.mp, peripheralAddress)
 
-            var connectionRecord = ConnectionRecord(
+            return ConnectionRecord(
                 version = readData.v,
                 msg = readData.id,
                 org = readData.o,
@@ -93,7 +89,6 @@ class V2Central : CentralInterface {
                 rssi = rssi,
                 txPower = txPower
             )
-            return connectionRecord
         } catch (e: Throwable) {
         }
 
