@@ -24,6 +24,7 @@ import io.bluetrace.opentrace.Utils
 import io.bluetrace.opentrace.bluetooth.BLEAdvertiser
 import io.bluetrace.opentrace.bluetooth.gatt.ACTION_RECEIVED_STATUS
 import io.bluetrace.opentrace.bluetooth.gatt.ACTION_RECEIVED_STREETPASS
+import io.bluetrace.opentrace.listeners.BluetoothStatusListener
 import io.bluetrace.opentrace.notifications.NotificationTemplates
 import io.bluetrace.opentrace.persistence.status.StatusRecordStorage
 import io.bluetrace.opentrace.streetpass.StreetPassScanner
@@ -38,7 +39,7 @@ import io.bluetrace.opentrace.services.enums.NOTIFICATION_STATE
 import java.lang.ref.WeakReference
 import kotlin.coroutines.CoroutineContext
 
-class BluetoothMonitoringService : Service(), CoroutineScope {
+class BluetoothMonitoringService : Service(), CoroutineScope, BluetoothStatusListener {
 
     private var mNotificationManager: NotificationManager? = null
 
@@ -52,7 +53,7 @@ class BluetoothMonitoringService : Service(), CoroutineScope {
 
     private val streetPassReceiver = StreetPassReceiver()
     private val statusReceiver = StatusReceiver()
-    private val bluetoothStatusReceiver = BluetoothStatusReceiver()
+    private val bluetoothStatusReceiver = BluetoothStatusReceiver(this)
 
     private lateinit var streetPassRecordStorage: StreetPassRecordStorage
     private lateinit var statusRecordStorage: StatusRecordStorage
@@ -317,7 +318,6 @@ class BluetoothMonitoringService : Service(), CoroutineScope {
         setupCycles()
     }
 
-
     fun calcPhaseShift(min: Long, max: Long): Long {
         return (min + (Math.random() * (max - min))).toLong()
     }
@@ -402,11 +402,7 @@ class BluetoothMonitoringService : Service(), CoroutineScope {
         }
     }
 
-
-
     private fun performHealthCheck() {
-
-
 
         if (!hasLocationPermissions() || !isBluetoothEnabled()) {
             notifyLackingThings(true)
@@ -437,8 +433,6 @@ class BluetoothMonitoringService : Service(), CoroutineScope {
         } else {
 
         }
-
-
     }
 
     private fun performPurge() {
@@ -452,7 +446,6 @@ class BluetoothMonitoringService : Service(), CoroutineScope {
         }
     }
 
-
     private fun stopService() {
         teardown()
         unregisterReceivers()
@@ -462,7 +455,6 @@ class BluetoothMonitoringService : Service(), CoroutineScope {
 
         job.cancel()
     }
-
 
     private fun registerReceivers() {
         val recordAvailableFilter = IntentFilter(ACTION_RECEIVED_STREETPASS)
@@ -494,9 +486,6 @@ class BluetoothMonitoringService : Service(), CoroutineScope {
 
         }
     }
-
-
-
 
     companion object {
 
@@ -537,5 +526,13 @@ class BluetoothMonitoringService : Service(), CoroutineScope {
         val infiniteScanning = false
         val infiniteAdvertising = false
         val useBlacklist = true
+    }
+
+    override fun onTeardown() {
+        teardown()
+    }
+
+    override fun onNotifyLackingThings() {
+        notifyLackingThings()
     }
 }

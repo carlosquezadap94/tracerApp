@@ -5,8 +5,11 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import io.bluetrace.opentrace.Utils
+import io.bluetrace.opentrace.listeners.BluetoothStatusListener
 
-class BluetoothStatusReceiver : BroadcastReceiver() {
+class BluetoothStatusReceiver (listener: BluetoothStatusListener) : BroadcastReceiver() {
+
+    private var listener: BluetoothStatusListener = listener
 
     override fun onReceive(context: Context?, intent: Intent?) {
         intent?.let {
@@ -17,10 +20,8 @@ class BluetoothStatusReceiver : BroadcastReceiver() {
                 when (state) {
                     BluetoothAdapter.STATE_TURNING_OFF -> {
 
-
-                        notifyLackingThings()
-                        teardown()
-
+                        listener.onNotifyLackingThings()
+                        listener.onTeardown()
                     }
                     BluetoothAdapter.STATE_OFF -> {
 
