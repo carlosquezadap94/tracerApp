@@ -1,26 +1,7 @@
-package io.bluetrace.opentrace.streetpass
+package io.bluetrace.opentrace.streetpass.bluetoothDeviceModels
 
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
-
-@Parcelize
-class ConnectablePeripheral(
-    var manuData: String,
-    var transmissionPower: Int?,
-    var rssi: Int
-) : Parcelable
-
-@Parcelize
-data class PeripheralDevice(
-    val modelP: String,
-    val address: String?
-) : Parcelable
-
-@Parcelize
-data class CentralDevice(
-    val modelC: String,
-    val address: String?
-) : Parcelable
 
 @Parcelize
 data class ConnectionRecord(
