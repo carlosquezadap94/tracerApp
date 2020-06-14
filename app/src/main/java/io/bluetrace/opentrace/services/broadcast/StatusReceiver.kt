@@ -11,10 +11,7 @@ import io.bluetrace.opentrace.persistence.status.StatusRecord
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
-class StatusReceiver(listener: StorageListener) : BroadcastReceiver() {
-
-    private val TAG = "StatusReceiver"
-    private val listener : StorageListener = listener
+class StatusReceiver(private val listener: StorageListener) : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
 

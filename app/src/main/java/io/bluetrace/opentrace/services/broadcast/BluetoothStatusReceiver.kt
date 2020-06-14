@@ -7,9 +7,7 @@ import android.content.Intent
 import io.bluetrace.opentrace.Utils
 import io.bluetrace.opentrace.listeners.BluetoothStatusListener
 
-class BluetoothStatusReceiver (listener: BluetoothStatusListener) : BroadcastReceiver() {
-
-    private var listener: BluetoothStatusListener = listener
+class BluetoothStatusReceiver (private var listener: BluetoothStatusListener) : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent?) {
         intent?.let {

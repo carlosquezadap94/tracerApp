@@ -11,10 +11,7 @@ import io.bluetrace.opentrace.streetpass.ConnectionRecord
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
-class StreetPassReceiver(listener : StorageListener) : BroadcastReceiver() {
-
-    private val TAG = "StreetPassReceiver"
-    private val listener : StorageListener = listener
+class StreetPassReceiver(private val listener: StorageListener) : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
 
