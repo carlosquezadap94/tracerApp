@@ -1,7 +1,6 @@
 package io.bluetrace.opentrace
 
 import android.Manifest
-import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.content.Context
@@ -9,24 +8,20 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.provider.Settings
-import android.view.View
-import android.view.inputmethod.InputMethodManager
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import io.bluetrace.opentrace.bluetooth.gatt.*
+import io.bluetrace.opentrace.persistence.status.Status
 import io.bluetrace.opentrace.scheduler.Scheduler
 import io.bluetrace.opentrace.services.BluetoothMonitoringService
+import io.bluetrace.opentrace.services.BluetoothMonitoringService.Companion.COMMAND_KEY
 import io.bluetrace.opentrace.services.BluetoothMonitoringService.Companion.PENDING_ADVERTISE_REQ_CODE
 import io.bluetrace.opentrace.services.BluetoothMonitoringService.Companion.PENDING_BM_UPDATE
 import io.bluetrace.opentrace.services.BluetoothMonitoringService.Companion.PENDING_HEALTH_CHECK_CODE
 import io.bluetrace.opentrace.services.BluetoothMonitoringService.Companion.PENDING_SCAN_REQ_CODE
-import io.bluetrace.opentrace.services.BluetoothMonitoringService.Companion.PENDING_START
-import io.bluetrace.opentrace.persistence.status.Status
+import io.bluetrace.opentrace.services.enums.Command
 import io.bluetrace.opentrace.streetpass.ACTION_DEVICE_SCANNED
 import io.bluetrace.opentrace.streetpass.ConnectablePeripheral
 import io.bluetrace.opentrace.streetpass.ConnectionRecord
-import java.io.BufferedReader
-import java.io.FileInputStream
-import java.io.InputStreamReader
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -52,7 +47,6 @@ object Utils {
         return false
     }
 
-
     fun getTime(milliSeconds: Long): String {
         val dateFormat = "h:mm a"
         // Create a DateFormatter object for displaying date in specified format.
@@ -67,14 +61,12 @@ object Utils {
     fun startBluetoothMonitoringService(context: Context) {
         val intent = Intent(context, BluetoothMonitoringService::class.java)
         intent.putExtra(
-            BluetoothMonitoringService.COMMAND_KEY,
-            BluetoothMonitoringService.Command.ACTION_START.index
+            COMMAND_KEY,
+            Command.ACTION_START.index
         )
 
         context.startService(intent)
     }
-
-
 
     fun scheduleBMUpdateCheck(context: Context, bmCheckInterval: Long) {
 
@@ -82,8 +74,8 @@ object Utils {
 
         val intent = Intent(context, BluetoothMonitoringService::class.java)
         intent.putExtra(
-            BluetoothMonitoringService.COMMAND_KEY,
-            BluetoothMonitoringService.Command.ACTION_UPDATE_BM.index
+            COMMAND_KEY,
+            Command.ACTION_UPDATE_BM.index
         )
 
         Scheduler.scheduleServiceIntent(
@@ -97,33 +89,27 @@ object Utils {
     fun cancelBMUpdateCheck(context: Context) {
         val intent = Intent(context, BluetoothMonitoringService::class.java)
         intent.putExtra(
-            BluetoothMonitoringService.COMMAND_KEY,
-            BluetoothMonitoringService.Command.ACTION_UPDATE_BM.index
+            COMMAND_KEY,
+            Command.ACTION_UPDATE_BM.index
         )
 
         Scheduler.cancelServiceIntent(PENDING_BM_UPDATE, context, intent)
     }
 
-
-
-
-
     fun cancelNextScan(context: Context) {
         val nextIntent = Intent(context, BluetoothMonitoringService::class.java)
         nextIntent.putExtra(
-            BluetoothMonitoringService.COMMAND_KEY,
-            BluetoothMonitoringService.Command.ACTION_SCAN.index
+            COMMAND_KEY,
+            Command.ACTION_SCAN.index
         )
         Scheduler.cancelServiceIntent(PENDING_SCAN_REQ_CODE, context, nextIntent)
     }
 
-
-
     fun cancelNextAdvertise(context: Context) {
         val nextIntent = Intent(context, BluetoothMonitoringService::class.java)
         nextIntent.putExtra(
-            BluetoothMonitoringService.COMMAND_KEY,
-            BluetoothMonitoringService.Command.ACTION_ADVERTISE.index
+            COMMAND_KEY,
+            Command.ACTION_ADVERTISE.index
         )
         Scheduler.cancelServiceIntent(PENDING_ADVERTISE_REQ_CODE, context, nextIntent)
     }
@@ -134,8 +120,8 @@ object Utils {
 
         val nextIntent = Intent(context, BluetoothMonitoringService::class.java)
         nextIntent.putExtra(
-            BluetoothMonitoringService.COMMAND_KEY,
-            BluetoothMonitoringService.Command.ACTION_SELF_CHECK.index
+            COMMAND_KEY,
+            Command.ACTION_SELF_CHECK.index
         )
         //runs every XXX milliseconds - every minute?
         Scheduler.scheduleServiceIntent(
@@ -149,8 +135,8 @@ object Utils {
     fun cancelNextHealthCheck(context: Context) {
         val nextIntent = Intent(context, BluetoothMonitoringService::class.java)
         nextIntent.putExtra(
-            BluetoothMonitoringService.COMMAND_KEY,
-            BluetoothMonitoringService.Command.ACTION_SELF_CHECK.index
+            COMMAND_KEY,
+            Command.ACTION_SELF_CHECK.index
         )
         Scheduler.cancelServiceIntent(PENDING_HEALTH_CHECK_CODE, context, nextIntent)
     }
@@ -158,10 +144,9 @@ object Utils {
     fun scheduleRepeatingPurge(context: Context, intervalMillis: Long) {
         val nextIntent = Intent(context, BluetoothMonitoringService::class.java)
         nextIntent.putExtra(
-            BluetoothMonitoringService.COMMAND_KEY,
-            BluetoothMonitoringService.Command.ACTION_PURGE.index
+            COMMAND_KEY,
+            Command.ACTION_PURGE.index
         )
-
     }
 
     fun broadcastDeviceScanned(
@@ -199,6 +184,4 @@ object Utils {
         return bluetoothAdapter != null &&
                 bluetoothAdapter.isEnabled && bluetoothAdapter.state == BluetoothAdapter.STATE_ON
     }
-
-
 }
