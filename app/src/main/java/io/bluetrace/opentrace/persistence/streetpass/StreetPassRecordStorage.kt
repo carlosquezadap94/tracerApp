@@ -5,7 +5,7 @@ import io.bluetrace.opentrace.persistence.TraceDatabase
 
 class StreetPassRecordStorage(val context: Context) {
 
-    val recordDao = TraceDatabase.getDatabase(context).recordDao()
+    private val recordDao = TraceDatabase.getDatabase(context).recordDao()
 
     suspend fun saveRecord(record: StreetPassRecord) {
         recordDao.insert(record)
