@@ -53,26 +53,5 @@ class Work constructor(
         return timeStamp.compareTo(other.timeStamp)
     }
 
-    inner class WorkCheckList {
-        var started = Check()
-        var connected = Check()
-        var mtuChanged = Check()
-        var readCharacteristic = Check()
-        var writeCharacteristic = Check()
-        var disconnected = Check()
-        var skipped = Check()
 
-        override fun toString(): String {
-            return Gson().toJson(this)
-        }
-    }
-
-    inner class Check {
-        var status = false
-        var timePerformed: Long = 0
-    }
-
-    interface OnWorkTimeoutListener {
-        fun onWorkTimeout(work: Work)
-    }
 }
