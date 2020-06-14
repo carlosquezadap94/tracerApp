@@ -35,7 +35,7 @@ import io.bluetrace.opentrace.services.broadcast.BluetoothStatusReceiver
 import io.bluetrace.opentrace.services.broadcast.StatusReceiver
 import io.bluetrace.opentrace.services.broadcast.StreetPassReceiver
 import io.bluetrace.opentrace.services.enums.Command
-import io.bluetrace.opentrace.services.enums.NOTIFICATION_STATE
+import io.bluetrace.opentrace.services.enums.NotificationState
 import java.lang.ref.WeakReference
 import kotlin.coroutines.CoroutineContext
 
@@ -69,7 +69,7 @@ class BluetoothMonitoringService : Service(), CoroutineScope, BluetoothStatusLis
 
     private lateinit var localBroadcastManager: LocalBroadcastManager
 
-    private var notificationShown: NOTIFICATION_STATE? = null
+    private var notificationShown: NotificationState? = null
 
     override fun onCreate() {
         localBroadcastManager = LocalBroadcastManager.getInstance(this)
@@ -185,20 +185,20 @@ class BluetoothMonitoringService : Service(), CoroutineScope, BluetoothStatusLis
     }
 
     private fun notifyLackingThings(override: Boolean = false) {
-        if (notificationShown != NOTIFICATION_STATE.LACKING_THINGS || override) {
+        if (notificationShown != NotificationState.LACKING_THINGS || override) {
             var notif =
                 NotificationTemplates.lackingThingsNotification(this.applicationContext, CHANNEL_ID)
             startForeground(NOTIFICATION_ID, notif)
-            notificationShown = NOTIFICATION_STATE.LACKING_THINGS
+            notificationShown = NotificationState.LACKING_THINGS
         }
     }
 
     private fun notifyRunning(override: Boolean = false) {
-        if (notificationShown != NOTIFICATION_STATE.RUNNING || override) {
+        if (notificationShown != NotificationState.RUNNING || override) {
             var notif =
                 NotificationTemplates.getRunningNotification(this.applicationContext, CHANNEL_ID)
             startForeground(NOTIFICATION_ID, notif)
-            notificationShown = NOTIFICATION_STATE.RUNNING
+            notificationShown = NotificationState.RUNNING
         }
     }
 
