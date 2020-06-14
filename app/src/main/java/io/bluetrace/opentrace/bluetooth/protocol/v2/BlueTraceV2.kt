@@ -4,9 +4,9 @@ import io.bluetrace.opentrace.TracerApp
 import io.bluetrace.opentrace.bluetooth.protocol.BlueTraceProtocol
 import io.bluetrace.opentrace.bluetooth.protocol.CentralInterface
 import io.bluetrace.opentrace.bluetooth.protocol.PeripheralInterface
-import io.bluetrace.opentrace.streetpass.CentralDevice
-import io.bluetrace.opentrace.streetpass.ConnectionRecord
-import io.bluetrace.opentrace.streetpass.PeripheralDevice
+import io.bluetrace.opentrace.streetpass.bluetoothDeviceModels.CentralDevice
+import io.bluetrace.opentrace.streetpass.bluetoothDeviceModels.ConnectionRecord
+import io.bluetrace.opentrace.streetpass.bluetoothDeviceModels.PeripheralDevice
 
 class BlueTraceV2 : BlueTraceProtocol(
     versionInt = 2,

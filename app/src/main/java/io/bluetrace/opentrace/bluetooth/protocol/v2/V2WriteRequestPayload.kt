@@ -2,7 +2,7 @@ package io.bluetrace.opentrace.bluetooth.protocol.v2
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import io.bluetrace.opentrace.streetpass.CentralDevice
+import io.bluetrace.opentrace.streetpass.bluetoothDeviceModels.CentralDevice
 
 class V2WriteRequestPayload(
     val v: Int,

@@ -7,7 +7,7 @@ import android.bluetooth.le.AdvertiseSettings
 import android.bluetooth.le.BluetoothLeAdvertiser
 import android.os.Handler
 import android.os.ParcelUuid
-import io.bluetrace.opentrace.services.BluetoothMonitoringService.Companion.infiniteAdvertising
+import io.bluetrace.opentrace.services.Constants.Companion.infiniteAdvertising
 import java.util.*
 
 

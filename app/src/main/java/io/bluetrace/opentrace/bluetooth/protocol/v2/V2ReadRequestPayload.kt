@@ -2,7 +2,7 @@ package io.bluetrace.opentrace.bluetooth.protocol.v2
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import io.bluetrace.opentrace.streetpass.PeripheralDevice
+import io.bluetrace.opentrace.streetpass.bluetoothDeviceModels.PeripheralDevice
 
 //acting as peripheral
 class V2ReadRequestPayload(

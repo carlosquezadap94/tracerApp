@@ -3,7 +3,10 @@ package io.bluetrace.opentrace.ui
 import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
-import android.content.*
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Build
 import android.os.Bundle
 import android.os.PowerManager
@@ -20,12 +23,15 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
+import io.bluetrace.opentrace.BuildConfig
+import io.bluetrace.opentrace.R
+import io.bluetrace.opentrace.TracerApp
+import io.bluetrace.opentrace.Utils
+import io.bluetrace.opentrace.persistence.TraceDatabase
+import io.bluetrace.opentrace.persistence.status.StatusRecord
 import kotlinx.android.synthetic.main.fragment_home.*
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions
-import io.bluetrace.opentrace.*
-import io.bluetrace.opentrace.persistence.status.StatusRecord
-import io.bluetrace.opentrace.persistence.TraceDatabase
 
 private const val REQUEST_ENABLE_BT = 123
 private const val PERMISSION_REQUEST_ACCESS_LOCATION = 456
@@ -149,11 +155,7 @@ class HomeFragment : Fragment() {
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 battery_card_view.visibility = View.VISIBLE
-                if (!powerManager.isIgnoringBatteryOptimizations(packageName)) {
-                    iv_battery.isSelected = false
-                } else {
-                    iv_battery.isSelected = true
-                }
+                iv_battery.isSelected = powerManager.isIgnoringBatteryOptimizations(packageName)
             } else {
                 battery_card_view.visibility = View.GONE
             }
@@ -217,7 +219,8 @@ class HomeFragment : Fragment() {
         bluetoothAdapter?.let {
             if (it.isDisabled) {
                 val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
-                startActivityForResult(enableBtIntent,
+                startActivityForResult(
+                    enableBtIntent,
                     REQUEST_ENABLE_BT
                 )
             }
@@ -263,7 +266,6 @@ class HomeFragment : Fragment() {
 
         showSetup()
     }
-
 
 
     private fun clearAndHideAnnouncement() {

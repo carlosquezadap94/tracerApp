@@ -7,9 +7,9 @@ import android.content.Intent
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import io.bluetrace.opentrace.R
+import io.bluetrace.opentrace.services.Constants.Companion.PENDING_ACTIVITY
+import io.bluetrace.opentrace.services.Constants.Companion.PENDING_WIZARD_REQ_CODE
 import io.bluetrace.opentrace.ui.StartActivity
-import io.bluetrace.opentrace.services.BluetoothMonitoringService.Companion.PENDING_ACTIVITY
-import io.bluetrace.opentrace.services.BluetoothMonitoringService.Companion.PENDING_WIZARD_REQ_CODE
 
 class NotificationTemplates {
 

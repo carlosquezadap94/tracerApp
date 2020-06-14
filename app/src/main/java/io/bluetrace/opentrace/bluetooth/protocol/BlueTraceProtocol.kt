@@ -1,6 +1,7 @@
 package io.bluetrace.opentrace.bluetooth.protocol
 
-import io.bluetrace.opentrace.streetpass.ConnectionRecord
+import io.bluetrace.opentrace.streetpass.bluetoothDeviceModels.ConnectionRecord
+
 
 open class BlueTraceProtocol(
     val versionInt: Int,

@@ -13,15 +13,15 @@ import io.bluetrace.opentrace.bluetooth.gatt.*
 import io.bluetrace.opentrace.persistence.status.Status
 import io.bluetrace.opentrace.scheduler.Scheduler
 import io.bluetrace.opentrace.services.BluetoothMonitoringService
-import io.bluetrace.opentrace.services.BluetoothMonitoringService.Companion.COMMAND_KEY
-import io.bluetrace.opentrace.services.BluetoothMonitoringService.Companion.PENDING_ADVERTISE_REQ_CODE
-import io.bluetrace.opentrace.services.BluetoothMonitoringService.Companion.PENDING_BM_UPDATE
-import io.bluetrace.opentrace.services.BluetoothMonitoringService.Companion.PENDING_HEALTH_CHECK_CODE
-import io.bluetrace.opentrace.services.BluetoothMonitoringService.Companion.PENDING_SCAN_REQ_CODE
+import io.bluetrace.opentrace.services.Constants.Companion.COMMAND_KEY
+import io.bluetrace.opentrace.services.Constants.Companion.PENDING_ADVERTISE_REQ_CODE
+import io.bluetrace.opentrace.services.Constants.Companion.PENDING_BM_UPDATE
+import io.bluetrace.opentrace.services.Constants.Companion.PENDING_HEALTH_CHECK_CODE
+import io.bluetrace.opentrace.services.Constants.Companion.PENDING_SCAN_REQ_CODE
 import io.bluetrace.opentrace.services.enums.Command
 import io.bluetrace.opentrace.streetpass.ACTION_DEVICE_SCANNED
-import io.bluetrace.opentrace.streetpass.ConnectablePeripheral
-import io.bluetrace.opentrace.streetpass.ConnectionRecord
+import io.bluetrace.opentrace.streetpass.bluetoothDeviceModels.ConnectablePeripheral
+import io.bluetrace.opentrace.streetpass.bluetoothDeviceModels.ConnectionRecord
 import java.text.SimpleDateFormat
 import java.util.*
 
