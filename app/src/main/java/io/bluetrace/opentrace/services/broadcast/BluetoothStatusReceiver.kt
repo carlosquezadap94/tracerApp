@@ -11,7 +11,7 @@ class BluetoothStatusReceiver (listener: BluetoothStatusListener) : BroadcastRec
 
     private var listener: BluetoothStatusListener = listener
 
-    override fun onReceive(context: Context?, intent: Intent?) {
+    override fun onReceive(context: Context, intent: Intent?) {
         intent?.let {
             val action = intent.action
             if (action == BluetoothAdapter.ACTION_STATE_CHANGED) {
@@ -31,7 +31,7 @@ class BluetoothStatusReceiver (listener: BluetoothStatusListener) : BroadcastRec
                     }
                     BluetoothAdapter.STATE_ON -> {
 
-                       Utils.startBluetoothMonitoringService(this@BluetoothMonitoringService.applicationContext)
+                       Utils.startBluetoothMonitoringService(context)
                     }
                 }
             }
