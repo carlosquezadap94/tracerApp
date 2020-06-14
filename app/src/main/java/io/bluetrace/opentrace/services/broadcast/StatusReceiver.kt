@@ -5,13 +5,13 @@ import android.content.Context
 import android.content.Intent
 import io.bluetrace.opentrace.bluetooth.gatt.ACTION_RECEIVED_STATUS
 import io.bluetrace.opentrace.bluetooth.gatt.STATUS
-import io.bluetrace.opentrace.listeners.StorageListener
+import io.bluetrace.opentrace.listeners.StorageStatusListener
 import io.bluetrace.opentrace.persistence.status.Status
 import io.bluetrace.opentrace.persistence.status.StatusRecord
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
-class StatusReceiver(private val listener: StorageListener) : BroadcastReceiver() {
+class StatusReceiver(private val statusListener: StorageStatusListener) : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
 
@@ -24,7 +24,7 @@ class StatusReceiver(private val listener: StorageListener) : BroadcastReceiver(
                         statusRecord.msg
                     )
                 GlobalScope.launch {
-                    listener.onStatusRecordStorage(statusRecord)
+                    statusListener.onStatusRecordStorage(statusRecord)
                 }
             }
         }

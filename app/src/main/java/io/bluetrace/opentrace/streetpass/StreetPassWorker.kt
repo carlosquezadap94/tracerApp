@@ -1,34 +1,37 @@
 package io.bluetrace.opentrace.streetpass
 
-import android.bluetooth.*
-import android.content.BroadcastReceiver
+import android.bluetooth.BluetoothDevice
+import android.bluetooth.BluetoothManager
+import android.bluetooth.BluetoothProfile
 import android.content.Context
-import android.content.Intent
 import android.content.IntentFilter
 import android.os.Handler
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import io.bluetrace.opentrace.BuildConfig
 import io.bluetrace.opentrace.Utils
 import io.bluetrace.opentrace.bluetooth.gatt.ACTION_DEVICE_PROCESSED
-import io.bluetrace.opentrace.bluetooth.gatt.CONNECTION_DATA
-import io.bluetrace.opentrace.bluetooth.gatt.DEVICE_ADDRESS
-import io.bluetrace.opentrace.bluetooth.protocol.BlueTrace
-import io.bluetrace.opentrace.services.BluetoothMonitoringService
-import io.bluetrace.opentrace.services.BluetoothMonitoringService.Companion.blacklistDuration
-import io.bluetrace.opentrace.services.BluetoothMonitoringService.Companion.maxQueueTime
-import io.bluetrace.opentrace.services.BluetoothMonitoringService.Companion.useBlacklist
+import io.bluetrace.opentrace.listeners.BlacklistListener
+import io.bluetrace.opentrace.listeners.ContextListener
+import io.bluetrace.opentrace.listeners.StreetPassListener
+import io.bluetrace.opentrace.listeners.WorkListener
+import io.bluetrace.opentrace.services.Constants
+import io.bluetrace.opentrace.services.Constants.Companion.connectionTimeout
+import io.bluetrace.opentrace.services.Constants.Companion.maxQueueTime
+import io.bluetrace.opentrace.services.Constants.Companion.useBlacklist
+import io.bluetrace.opentrace.streetpass.callback.CentralGattCallback
+import io.bluetrace.opentrace.streetpass.receiver.BlacklistReceiver
+import io.bluetrace.opentrace.streetpass.receiver.ScannedDeviceReceiver
 import java.util.*
 import java.util.concurrent.PriorityBlockingQueue
 
-class StreetPassWorker(val context: Context) {
+class StreetPassWorker(val context: Context) : StreetPassListener, BlacklistListener,
+    ContextListener, WorkListener {
 
-    private val workQueue: PriorityBlockingQueue<Work> = PriorityBlockingQueue(5, Collections.reverseOrder<Work>())
+    private val workQueue: PriorityBlockingQueue<Work> =
+        PriorityBlockingQueue(5, Collections.reverseOrder<Work>())
     private val blacklist: MutableList<BlacklistEntry> = Collections.synchronizedList(ArrayList())
 
-    private val scannedDeviceReceiver = ScannedDeviceReceiver()
-    private val blacklistReceiver = BlacklistReceiver()
-    private val serviceUUID: UUID = UUID.fromString(BuildConfig.BLE_SSID)
-    private val characteristicV2: UUID = UUID.fromString(BuildConfig.V2_CHARACTERISTIC_ID)
+    private val scannedDeviceReceiver = ScannedDeviceReceiver(this, this)
+    private val blacklistReceiver = BlacklistReceiver(this)
 
     private val TAG = "StreetPassWorker"
 
@@ -43,69 +46,6 @@ class StreetPassWorker(val context: Context) {
     private var localBroadcastManager: LocalBroadcastManager =
         LocalBroadcastManager.getInstance(context)
 
-    val onWorkTimeoutListener = object : Work.OnWorkTimeoutListener {
-        override fun onWorkTimeout(work: Work) {
-
-            if (!isCurrentlyWorkedOn(work.device.address)) {
-
-            }
-
-
-
-            //connection never formed - don't need to disconnect
-            if (!work.checklist.connected.status) {
-
-                if (work.device.address == currentWork?.device?.address) {
-                    currentWork = null
-                }
-
-                try {
-                    work.gatt?.close()
-                } catch (e: Exception) {
-
-                }
-
-                finishWork(work)
-            }
-            //the connection is still there - might be stuck / work in progress
-            else if (work.checklist.connected.status && !work.checklist.disconnected.status) {
-
-                if (work.checklist.readCharacteristic.status || work.checklist.writeCharacteristic.status || work.checklist.skipped.status) {
-
-
-                    try {
-                        work.gatt?.disconnect()
-                        //disconnect callback won't get invoked
-                        if (work.gatt == null) {
-                            currentWork = null
-                            finishWork(work)
-                        }
-                    } catch (e: Throwable) {
-
-                    }
-
-                } else {
-
-
-                    try {
-                        work.gatt?.disconnect()
-                        //disconnect callback won't get invoked
-                        if (work.gatt == null) {
-                            currentWork = null
-                            finishWork(work)
-                        }
-                    } catch (e: Throwable) {
-
-                    }
-                }
-            }
-
-            //all other edge cases? - disconnected
-            else {
-
-            }
-        }
-    }
 
     init {
         prepare()
@@ -123,13 +63,23 @@ class StreetPassWorker(val context: Context) {
         blacklistHandler = Handler()
     }
 
-    fun isCurrentlyWorkedOn(address: String?): Boolean {
+    override fun isCurrentlyWorkedOn(address: String): Boolean {
         return currentWork?.let {
             it.device.address == address
         } ?: false
     }
 
-    fun addWork(work: Work): Boolean {
+    override fun currentWorkToNull() {
+        currentWork = null
+    }
+
+    override fun timeoutHandler(runnable: Runnable) {
+        timeoutHandler.removeCallbacks(runnable)
+    }
+
+    override fun getCurrrentWork() = currentWork!!
+
+    override fun addWork(work: Work): Boolean {
         //if it's our current work. ignore
         if (isCurrentlyWorkedOn(work.device.address)) {
             return false
@@ -160,7 +110,6 @@ class StreetPassWorker(val context: Context) {
         else {
 
 
-
             var prevWork = workQueue.find { it.device.address == work.device.address }
             var removed = workQueue.remove(prevWork)
             var added = workQueue.offer(work)
@@ -171,7 +120,7 @@ class StreetPassWorker(val context: Context) {
         }
     }
 
-    fun doWork() {
+    override fun doWork() {
         //check the status of the current work item
         if (currentWork != null) {
 
@@ -202,7 +151,6 @@ class StreetPassWorker(val context: Context) {
 
             return
         }
-
 
 
         var workToDo: Work? = null
@@ -242,7 +190,7 @@ class StreetPassWorker(val context: Context) {
 
                 currentWorkOrder.let {
 
-                    val gattCallback = CentralGattCallback(it)
+                    val gattCallback = CentralGattCallback(it, this, this)
 
                     currentWork = it
 
@@ -266,10 +214,10 @@ class StreetPassWorker(val context: Context) {
 
                         timeoutHandler.postDelayed(
                             it.timeoutRunnable,
-                            BluetoothMonitoringService.connectionTimeout
+                            connectionTimeout
                         )
                         it.timeout =
-                            System.currentTimeMillis() + BluetoothMonitoringService.connectionTimeout
+                            System.currentTimeMillis() + connectionTimeout
 
 
                     } catch (e: Throwable) {
@@ -296,7 +244,7 @@ class StreetPassWorker(val context: Context) {
         return connectedDevices.contains(device)
     }
 
-    fun finishWork(work: Work) {
+    override fun finishWork(work: Work) {
 
         if (work.finished) {
 
@@ -305,7 +253,7 @@ class StreetPassWorker(val context: Context) {
 
         if (work.isCriticalsCompleted()) {
             Utils.broadcastDeviceProcessed(context, work.device.address)
-//            Utils.broadcastDeviceProcessed(context, work.connectable.manuData)
+            Utils.broadcastDeviceProcessed(context, work.connectable.manuData)
         }
 
 
@@ -315,200 +263,6 @@ class StreetPassWorker(val context: Context) {
 
         work.finished = true
         doWork()
-    }
-
-    inner class CentralGattCallback(val work: Work) : BluetoothGattCallback() {
-
-        fun endWorkConnection(gatt: BluetoothGatt) {
-            gatt.disconnect()
-        }
-
-        override fun onConnectionStateChange(gatt: BluetoothGatt?, status: Int, newState: Int) {
-
-            gatt?.let {
-
-                when (newState) {
-                    BluetoothProfile.STATE_CONNECTED -> {
-
-
-                        //get a fast connection?
-//                        gatt.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH)
-                        gatt.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_BALANCED)
-                        gatt.requestMtu(512)
-
-                        work.checklist.connected.status = true
-                        work.checklist.connected.timePerformed = System.currentTimeMillis()
-                    }
-
-                    BluetoothProfile.STATE_DISCONNECTED -> {
-                        work.checklist.disconnected.status = true
-                        work.checklist.disconnected.timePerformed = System.currentTimeMillis()
-
-                        //remove timeout runnable if its still there
-                        timeoutHandler.removeCallbacks(work.timeoutRunnable)
-
-
-                        //remove job from list of current work - if it is the current work
-                        if (work.device.address == currentWork?.device?.address) {
-                            currentWork = null
-                        }
-                        gatt.close()
-                        finishWork(work)
-                    }
-
-                    else -> {
-
-                        endWorkConnection(gatt)
-                    }
-                }
-            }
-        }
-
-        override fun onMtuChanged(gatt: BluetoothGatt?, mtu: Int, status: Int) {
-
-            if (!work.checklist.mtuChanged.status) {
-
-                work.checklist.mtuChanged.status = true
-                work.checklist.mtuChanged.timePerformed = System.currentTimeMillis()
-
-
-
-                gatt?.let {
-                    val discoveryOn = gatt.discoverServices()
-
-                }
-            }
-        }
-
-        // New services discovered
-        override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) {
-            when (status) {
-                BluetoothGatt.GATT_SUCCESS -> {
-
-
-                    var service = gatt.getService(serviceUUID)
-
-                    service?.let {
-
-                        //select characteristicUUID to read from
-                        val characteristic = service.getCharacteristic(characteristicV2)
-
-                        if (characteristic != null) {
-                            val readSuccess = gatt.readCharacteristic(characteristic)
-
-                        } else {
-
-                            endWorkConnection(gatt)
-                        }
-                    }
-
-                    if (service == null) {
-
-                        endWorkConnection(gatt)
-                    }
-                }
-                else -> {
-
-                    endWorkConnection(gatt)
-                }
-            }
-        }
-
-        // data read from a perhipheral
-        //I am a central
-        override fun onCharacteristicRead(
-            gatt: BluetoothGatt,
-            characteristic: BluetoothGattCharacteristic,
-            status: Int
-        ) {
-
-            when (status) {
-                BluetoothGatt.GATT_SUCCESS -> {
-
-
-
-
-                    if (BlueTrace.supportsCharUUID(characteristic.uuid)) {
-
-                        try {
-                            val bluetraceImplementation =
-                                BlueTrace.getImplementation(characteristic.uuid)
-                            val dataBytes = characteristic.value
-
-                            val connectionRecord =
-                                bluetraceImplementation
-                                    .central
-                                    .processReadRequestDataReceived(
-                                        dataRead = dataBytes,
-                                        peripheralAddress = work.device.address,
-                                        rssi = work.connectable.rssi,
-                                        txPower = work.connectable.transmissionPower
-                                    )
-
-                            //if the deserializing was a success, connectionRecord will not be null, save it
-                            connectionRecord?.let {
-                                Utils.broadcastStreetPassReceived(
-                                    context,
-                                    connectionRecord
-                                )
-                            }
-                        } catch (e: Throwable) {
-                        }
-
-                    }
-                    work.checklist.readCharacteristic.status = true
-                    work.checklist.readCharacteristic.timePerformed = System.currentTimeMillis()
-                }
-
-                else -> {
-
-                }
-            }
-
-            //attempt to do a write
-            if (BlueTrace.supportsCharUUID(characteristic.uuid)) {
-
-
-
-                val bluetraceImplementation = BlueTrace.getImplementation(characteristic.uuid)
-
-                var writedata = bluetraceImplementation.central.prepareWriteRequestData(
-                    bluetraceImplementation.versionInt,
-                    work.connectable.rssi,
-                    work.connectable.transmissionPower
-                )
-                characteristic.value = writedata
-                val writeSuccess = gatt.writeCharacteristic(characteristic)
-
-
-                endWorkConnection(gatt)
-
-
-            } else {
-
-                endWorkConnection(gatt)
-            }
-        }
-
-        override fun onCharacteristicWrite(
-            gatt: BluetoothGatt,
-            characteristic: BluetoothGattCharacteristic,
-            status: Int
-        ) {
-
-            when (status) {
-                BluetoothGatt.GATT_SUCCESS -> {
-                    work.checklist.writeCharacteristic.status = true
-                    work.checklist.writeCharacteristic.timePerformed =
-                        System.currentTimeMillis()
-                }
-                else -> {
-                }
-            }
-
-            endWorkConnection(gatt)
-        }
-
     }
 
     fun terminateConnections() {
@@ -538,50 +292,16 @@ class StreetPassWorker(val context: Context) {
         }
     }
 
-    inner class BlacklistReceiver : BroadcastReceiver() {
-
-        override fun onReceive(context: Context, intent: Intent) {
-            if (ACTION_DEVICE_PROCESSED == intent.action) {
-                val deviceAddress = intent.getStringExtra(DEVICE_ADDRESS)
-
-                val entry = BlacklistEntry(deviceAddress, System.currentTimeMillis())
-                blacklist.add(entry)
-                blacklistHandler.postDelayed({
-
-                }, blacklistDuration)
-            }
-        }
+    override fun addEntry(blackEntry: BlacklistEntry) {
+        blacklist.add(blackEntry)
     }
 
-    inner class ScannedDeviceReceiver : BroadcastReceiver() {
-
-        private val TAG = "ScannedDeviceReceiver"
-
-        override fun onReceive(context: Context?, intent: Intent?) {
-
-            intent?.let {
-                if (ACTION_DEVICE_SCANNED == intent.action) {
-                    //get data from extras
-                    val device: BluetoothDevice? =
-                        intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
-                    val connectable: ConnectablePeripheral? =
-                        intent.getParcelableExtra(CONNECTION_DATA)
-
-                    val devicePresent = device != null
-                    val connectablePresent = connectable != null
-
-
-
-                    device?.let {
-                        connectable?.let {
-                            val work = Work(device, connectable, onWorkTimeoutListener)
-                            if (addWork(work)) {
-                                doWork()
-                            }
-                        }
-                    }
-                }
-            }
-        }
+    override fun handlerBlackList() {
+        blacklistHandler.postDelayed({
+        }, Constants.blacklistDuration)
     }
+
+    override fun getContext_() = context
+
+
 }

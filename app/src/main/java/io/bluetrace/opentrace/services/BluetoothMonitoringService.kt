@@ -14,36 +14,52 @@ import android.os.IBinder
 import android.os.PowerManager
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.firebase.functions.FirebaseFunctions
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
-import pub.devrel.easypermissions.EasyPermissions
 import io.bluetrace.opentrace.BuildConfig
 import io.bluetrace.opentrace.Utils
 import io.bluetrace.opentrace.bluetooth.BLEAdvertiser
 import io.bluetrace.opentrace.bluetooth.gatt.ACTION_RECEIVED_STATUS
 import io.bluetrace.opentrace.bluetooth.gatt.ACTION_RECEIVED_STREETPASS
 import io.bluetrace.opentrace.listeners.BluetoothStatusListener
-import io.bluetrace.opentrace.listeners.StorageListener
+import io.bluetrace.opentrace.listeners.StorageRecordListener
+import io.bluetrace.opentrace.listeners.StorageStatusListener
 import io.bluetrace.opentrace.notifications.NotificationTemplates
 import io.bluetrace.opentrace.persistence.status.StatusRecord
 import io.bluetrace.opentrace.persistence.status.StatusRecordStorage
 import io.bluetrace.opentrace.persistence.streetpass.StreetPassRecord
-import io.bluetrace.opentrace.streetpass.StreetPassScanner
-import io.bluetrace.opentrace.streetpass.StreetPassServer
-import io.bluetrace.opentrace.streetpass.StreetPassWorker
 import io.bluetrace.opentrace.persistence.streetpass.StreetPassRecordStorage
+import io.bluetrace.opentrace.services.Constants.Companion.CHANNEL_ID
+import io.bluetrace.opentrace.services.Constants.Companion.CHANNEL_SERVICE
+import io.bluetrace.opentrace.services.Constants.Companion.COMMAND_KEY
+import io.bluetrace.opentrace.services.Constants.Companion.NOTIFICATION_ID
+import io.bluetrace.opentrace.services.Constants.Companion.advertisingDuration
+import io.bluetrace.opentrace.services.Constants.Companion.advertisingGap
+import io.bluetrace.opentrace.services.Constants.Companion.bmCheckInterval
+import io.bluetrace.opentrace.services.Constants.Companion.healthCheckInterval
+import io.bluetrace.opentrace.services.Constants.Companion.infiniteAdvertising
+import io.bluetrace.opentrace.services.Constants.Companion.infiniteScanning
+import io.bluetrace.opentrace.services.Constants.Companion.maxScanInterval
+import io.bluetrace.opentrace.services.Constants.Companion.minScanInterval
+import io.bluetrace.opentrace.services.Constants.Companion.purgeInterval
+import io.bluetrace.opentrace.services.Constants.Companion.purgeTTL
+import io.bluetrace.opentrace.services.Constants.Companion.scanDuration
 import io.bluetrace.opentrace.services.broadcast.BluetoothStatusReceiver
 import io.bluetrace.opentrace.services.broadcast.StatusReceiver
 import io.bluetrace.opentrace.services.broadcast.StreetPassReceiver
 import io.bluetrace.opentrace.services.enums.Command
 import io.bluetrace.opentrace.services.enums.NotificationState
+import io.bluetrace.opentrace.streetpass.StreetPassScanner
+import io.bluetrace.opentrace.streetpass.StreetPassServer
+import io.bluetrace.opentrace.streetpass.StreetPassWorker
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import pub.devrel.easypermissions.EasyPermissions
 import java.lang.ref.WeakReference
 import kotlin.coroutines.CoroutineContext
 
 class BluetoothMonitoringService : Service(), CoroutineScope, BluetoothStatusListener,
-    StorageListener {
+    StorageStatusListener, StorageRecordListener {
 
     private var mNotificationManager: NotificationManager? = null
 
@@ -217,7 +233,6 @@ class BluetoothMonitoringService : Service(), CoroutineScope, BluetoothStatusLis
     }
 
 
-
     private fun isBluetoothEnabled(): Boolean {
         var btOn = false
         val bluetoothAdapter: BluetoothAdapter? by lazy(LazyThreadSafetyMode.NONE) {
@@ -300,7 +315,8 @@ class BluetoothMonitoringService : Service(), CoroutineScope, BluetoothStatusLis
                 actionPurge()
             }
 
-            else ->{}
+            else -> {
+            }
         }
     }
 
@@ -489,47 +505,6 @@ class BluetoothMonitoringService : Service(), CoroutineScope, BluetoothStatusLis
         } catch (e: Throwable) {
 
         }
-    }
-
-    companion object {
-
-        private val TAG = "BTMService"
-
-        private val NOTIFICATION_ID = BuildConfig.SERVICE_FOREGROUND_NOTIFICATION_ID
-        private val CHANNEL_ID = BuildConfig.SERVICE_FOREGROUND_CHANNEL_ID
-        val CHANNEL_SERVICE = BuildConfig.SERVICE_FOREGROUND_CHANNEL_NAME
-
-        val PUSH_NOTIFICATION_ID = BuildConfig.PUSH_NOTIFICATION_ID
-
-        val COMMAND_KEY = "${BuildConfig.APPLICATION_ID}_CMD"
-
-        val PENDING_ACTIVITY = 5
-        val PENDING_START = 6
-        val PENDING_SCAN_REQ_CODE = 7
-        val PENDING_ADVERTISE_REQ_CODE = 8
-        val PENDING_HEALTH_CHECK_CODE = 9
-        val PENDING_WIZARD_REQ_CODE = 10
-        val PENDING_BM_UPDATE = 11
-        val PENDING_PURGE_CODE = 12
-
-
-        //should be more than advertising gap?
-        val scanDuration: Long = BuildConfig.SCAN_DURATION
-        val minScanInterval: Long = BuildConfig.MIN_SCAN_INTERVAL
-        val maxScanInterval: Long = BuildConfig.MAX_SCAN_INTERVAL
-
-        val advertisingDuration: Long = BuildConfig.ADVERTISING_DURATION
-        val advertisingGap: Long = BuildConfig.ADVERTISING_INTERVAL
-        val maxQueueTime: Long = BuildConfig.MAX_QUEUE_TIME
-        val bmCheckInterval: Long = BuildConfig.BM_CHECK_INTERVAL
-        val healthCheckInterval: Long = BuildConfig.HEALTH_CHECK_INTERVAL
-        val purgeInterval: Long = BuildConfig.PURGE_INTERVAL
-        val purgeTTL: Long = BuildConfig.PURGE_TTL
-        val connectionTimeout: Long = BuildConfig.CONNECTION_TIMEOUT
-        val blacklistDuration: Long = BuildConfig.BLACKLIST_DURATION
-        val infiniteScanning = false
-        val infiniteAdvertising = false
-        val useBlacklist = true
     }
 
     override fun onTeardown() {

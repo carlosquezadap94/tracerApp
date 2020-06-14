@@ -1,21 +1,21 @@
 package io.bluetrace.opentrace.streetpass
 
-import android.bluetooth.le.ScanCallback
-import android.bluetooth.le.ScanResult
 import android.content.Context
-import android.os.Build
 import android.os.Handler
 import io.bluetrace.opentrace.Utils
 import io.bluetrace.opentrace.bluetooth.BLEScanner
-import io.bluetrace.opentrace.services.BluetoothMonitoringService.Companion.infiniteScanning
+import io.bluetrace.opentrace.listeners.BleScanListener
+import io.bluetrace.opentrace.listeners.ContextListener
 import io.bluetrace.opentrace.persistence.status.Status
+import io.bluetrace.opentrace.services.Constants.Companion.infiniteScanning
+import io.bluetrace.opentrace.streetpass.callback.BleScanCallback
 import kotlin.properties.Delegates
 
 class StreetPassScanner constructor(
     context: Context,
     serviceUUIDString: String,
     private val scanDurationInMillis: Long
-) {
+) : BleScanListener, ContextListener {
 
     private var scanner: BLEScanner by Delegates.notNull()
 
@@ -26,7 +26,7 @@ class StreetPassScanner constructor(
 
     var scannerCount = 0
 
-    val scanCallback = BleScanCallback()
+    val scanCallback = BleScanCallback(this, this)
 
 //    var discoverer: BLEDiscoverer
 
@@ -71,58 +71,13 @@ class StreetPassScanner constructor(
         return scannerCount > 0
     }
 
-    inner class BleScanCallback : ScanCallback() {
+    override fun scannerCount() = scannerCount
 
-        private val TAG = "BleScanCallback"
-
-        private fun processScanResult(scanResult: ScanResult?) {
-
-            scanResult?.let { result ->
-                val device = result.device
-                var rssi = result.rssi // get RSSI value
-
-                var txPower: Int? = null
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    txPower = result.txPower
-                    if (txPower == 127) {
-                        txPower = null
-                    }
-                }
-
-                var manuData: ByteArray =
-                    scanResult.scanRecord?.getManufacturerSpecificData(1023) ?: "N.A".toByteArray()
-                var manuString = String(manuData, Charsets.UTF_8)
-
-                var connectable = ConnectablePeripheral(manuString, txPower, rssi)
-
-
-                Utils.broadcastDeviceScanned(context, device, connectable)
-            }
-        }
-
-        override fun onScanResult(callbackType: Int, result: ScanResult?) {
-            super.onScanResult(callbackType, result)
-            processScanResult(result)
-        }
-
-        override fun onScanFailed(errorCode: Int) {
-            super.onScanFailed(errorCode)
-
-            val reason = when (errorCode) {
-                SCAN_FAILED_ALREADY_STARTED -> "$errorCode - SCAN_FAILED_ALREADY_STARTED"
-                SCAN_FAILED_APPLICATION_REGISTRATION_FAILED -> "$errorCode - SCAN_FAILED_APPLICATION_REGISTRATION_FAILED"
-                SCAN_FAILED_FEATURE_UNSUPPORTED -> "$errorCode - SCAN_FAILED_FEATURE_UNSUPPORTED"
-                SCAN_FAILED_INTERNAL_ERROR -> "$errorCode - SCAN_FAILED_INTERNAL_ERROR"
-                else -> {
-                    "$errorCode - UNDOCUMENTED"
-                }
-            }
-            if (scannerCount > 0) {
-                scannerCount--
-            }
-        }
+    override fun discountScanCount(): Int {
+        return scannerCount--
     }
+
+    override fun getContext_() = context
 
 
 }
