@@ -1,4 +1,4 @@
-package io.bluetrace.opentrace.services.broadcast
+package io.bluetrace.opentrace.services.receiver
 
 import android.bluetooth.BluetoothAdapter
 import android.content.BroadcastReceiver

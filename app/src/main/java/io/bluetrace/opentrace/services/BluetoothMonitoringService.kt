@@ -42,9 +42,9 @@ import io.bluetrace.opentrace.services.Constants.Companion.minScanInterval
 import io.bluetrace.opentrace.services.Constants.Companion.purgeInterval
 import io.bluetrace.opentrace.services.Constants.Companion.purgeTTL
 import io.bluetrace.opentrace.services.Constants.Companion.scanDuration
-import io.bluetrace.opentrace.services.broadcast.BluetoothStatusReceiver
-import io.bluetrace.opentrace.services.broadcast.StatusReceiver
-import io.bluetrace.opentrace.services.broadcast.StreetPassReceiver
+import io.bluetrace.opentrace.services.receiver.BluetoothStatusReceiver
+import io.bluetrace.opentrace.services.receiver.StatusReceiver
+import io.bluetrace.opentrace.services.receiver.StreetPassReceiver
 import io.bluetrace.opentrace.services.enums.Command
 import io.bluetrace.opentrace.services.enums.NotificationState
 import io.bluetrace.opentrace.streetpass.StreetPassScanner
