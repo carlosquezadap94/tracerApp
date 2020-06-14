@@ -4,8 +4,8 @@ import android.app.Application
 import android.content.Context
 import android.os.Build
 import android.provider.Settings
-import io.bluetrace.opentrace.streetpass.CentralDevice
-import io.bluetrace.opentrace.streetpass.PeripheralDevice
+import io.bluetrace.opentrace.streetpass.bluetoothDeviceModels.CentralDevice
+import io.bluetrace.opentrace.streetpass.bluetoothDeviceModels.PeripheralDevice
 
 class TracerApp : Application() {
 

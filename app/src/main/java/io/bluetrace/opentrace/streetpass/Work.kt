@@ -4,7 +4,8 @@ import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothGatt
 import android.content.Context
 import android.os.Build
-import com.google.gson.Gson
+import io.bluetrace.opentrace.streetpass.bluetoothDeviceModels.ConnectablePeripheral
+import io.bluetrace.opentrace.streetpass.callback.CentralGattCallback
 import kotlin.properties.Delegates
 
 class Work constructor(
@@ -30,12 +31,15 @@ class Work constructor(
 
 
     fun isCriticalsCompleted(): Boolean {
-        return (checklist.connected.status && checklist.readCharacteristic.status && checklist.writeCharacteristic.status) || checklist.skipped.status
+        return (checklist.connected.status
+                && checklist.readCharacteristic.status
+                && checklist.writeCharacteristic.status)
+                || checklist.skipped.status
     }
 
     fun startWork(
         context: Context,
-        gattCallback: StreetPassWorker.CentralGattCallback
+        gattCallback: CentralGattCallback
     ) {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
