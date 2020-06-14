@@ -18,10 +18,9 @@ import io.bluetrace.opentrace.services.BluetoothMonitoringService
 import io.bluetrace.opentrace.services.BluetoothMonitoringService.Companion.PENDING_ADVERTISE_REQ_CODE
 import io.bluetrace.opentrace.services.BluetoothMonitoringService.Companion.PENDING_BM_UPDATE
 import io.bluetrace.opentrace.services.BluetoothMonitoringService.Companion.PENDING_HEALTH_CHECK_CODE
-import io.bluetrace.opentrace.services.BluetoothMonitoringService.Companion.PENDING_PURGE_CODE
 import io.bluetrace.opentrace.services.BluetoothMonitoringService.Companion.PENDING_SCAN_REQ_CODE
 import io.bluetrace.opentrace.services.BluetoothMonitoringService.Companion.PENDING_START
-import io.bluetrace.opentrace.status.Status
+import io.bluetrace.opentrace.persistence.status.Status
 import io.bluetrace.opentrace.streetpass.ACTION_DEVICE_SCANNED
 import io.bluetrace.opentrace.streetpass.ConnectablePeripheral
 import io.bluetrace.opentrace.streetpass.ConnectionRecord
@@ -53,16 +52,6 @@ object Utils {
         return false
     }
 
-    fun getDate(milliSeconds: Long): String {
-        val dateFormat = "dd/MM/yyyy HH:mm:ss.SSS"
-        // Create a DateFormatter object for displaying date in specified format.
-        val formatter = SimpleDateFormat(dateFormat)
-
-        // Create a calendar object that will convert the date and time value in milliseconds to date.
-        val calendar = Calendar.getInstance()
-        calendar.timeInMillis = milliSeconds
-        return formatter.format(calendar.time)
-    }
 
     fun getTime(milliSeconds: Long): String {
         val dateFormat = "h:mm a"
@@ -85,20 +74,7 @@ object Utils {
         context.startService(intent)
     }
 
-    fun scheduleStartMonitoringService(context: Context, timeInMillis: Long) {
-        val intent = Intent(context, BluetoothMonitoringService::class.java)
-        intent.putExtra(
-            BluetoothMonitoringService.COMMAND_KEY,
-            BluetoothMonitoringService.Command.ACTION_START.index
-        )
 
-        Scheduler.scheduleServiceIntent(
-            PENDING_START,
-            context,
-            intent,
-            timeInMillis
-        )
-    }
 
     fun scheduleBMUpdateCheck(context: Context, bmCheckInterval: Long) {
 
@@ -128,35 +104,9 @@ object Utils {
         Scheduler.cancelServiceIntent(PENDING_BM_UPDATE, context, intent)
     }
 
-    fun stopBluetoothMonitoringService(context: Context) {
-        val intent = Intent(context, BluetoothMonitoringService::class.java)
-        intent.putExtra(
-            BluetoothMonitoringService.COMMAND_KEY,
-            BluetoothMonitoringService.Command.ACTION_STOP.index
-        )
-        cancelNextScan(context)
-        cancelNextHealthCheck(context)
-        context.stopService(intent)
-    }
 
-    fun scheduleNextScan(context: Context, timeInMillis: Long) {
 
-        //cancels any outstanding scan schedules.
-        cancelNextScan(context)
 
-        val nextIntent = Intent(context, BluetoothMonitoringService::class.java)
-        nextIntent.putExtra(
-            BluetoothMonitoringService.COMMAND_KEY,
-            BluetoothMonitoringService.Command.ACTION_SCAN.index
-        )
-        //runs every XXX milliseconds
-        Scheduler.scheduleServiceIntent(
-            PENDING_SCAN_REQ_CODE,
-            context,
-            nextIntent,
-            timeInMillis
-        )
-    }
 
     fun cancelNextScan(context: Context) {
         val nextIntent = Intent(context, BluetoothMonitoringService::class.java)
@@ -167,24 +117,7 @@ object Utils {
         Scheduler.cancelServiceIntent(PENDING_SCAN_REQ_CODE, context, nextIntent)
     }
 
-    fun scheduleNextAdvertise(context: Context, timeToNextAdvertise: Long) {
 
-        //cancels any outstanding scan schedules.
-        cancelNextAdvertise(context)
-
-        val nextIntent = Intent(context, BluetoothMonitoringService::class.java)
-        nextIntent.putExtra(
-            BluetoothMonitoringService.COMMAND_KEY,
-            BluetoothMonitoringService.Command.ACTION_ADVERTISE.index
-        )
-        //runs every XXX milliseconds
-        Scheduler.scheduleServiceIntent(
-            PENDING_ADVERTISE_REQ_CODE,
-            context,
-            nextIntent,
-            timeToNextAdvertise
-        )
-    }
 
     fun cancelNextAdvertise(context: Context) {
         val nextIntent = Intent(context, BluetoothMonitoringService::class.java)
@@ -259,58 +192,6 @@ object Utils {
         val intent = Intent(ACTION_RECEIVED_STATUS)
         intent.putExtra(STATUS, statusRecord)
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent)
-    }
-
-    fun broadcastDeviceDisconnected(context: Context, device: BluetoothDevice) {
-        val intent = Intent(ACTION_GATT_DISCONNECTED)
-        intent.putExtra(BluetoothDevice.EXTRA_DEVICE, device)
-        LocalBroadcastManager.getInstance(context).sendBroadcast(intent)
-    }
-
-    fun readFromInternalStorage(context: Context, fileName: String): String {
-
-        val fileInputStream: FileInputStream
-        var text: String? = null
-        val stringBuilder: StringBuilder = StringBuilder()
-        fileInputStream = context.openFileInput(fileName)
-        var inputStreamReader: InputStreamReader = InputStreamReader(fileInputStream)
-        val bufferedReader: BufferedReader = BufferedReader(inputStreamReader)
-        try {
-            while ({ text = bufferedReader.readLine(); text }() != null) {
-                stringBuilder.append(text)
-            }
-
-            bufferedReader.close()
-
-        } catch (e: Throwable) {
-        }
-        return stringBuilder.toString()
-    }
-
-    fun getDateFromUnix(unix_timestamp: Long): String? {
-        val sdf = SimpleDateFormat("yyyy-MM-dd_HH-mm-ss", Locale.ENGLISH)
-        val date = sdf.format(unix_timestamp)
-        return date.toString()
-    }
-
-    fun hideKeyboardFrom(
-        context: Context,
-        view: View
-    ) {
-        val imm = context.getSystemService(
-            Activity.INPUT_METHOD_SERVICE
-        ) as InputMethodManager
-        imm.hideSoftInputFromWindow(view.windowToken, 0)
-    }
-
-    fun showKeyboardFrom(
-        context: Context,
-        view: View?
-    ) {
-        val imm = context.getSystemService(
-            Activity.INPUT_METHOD_SERVICE
-        ) as InputMethodManager
-        imm.showSoftInput(view, InputMethodManager.SHOW_FORCED)
     }
 
     fun isBluetoothAvailable(): Boolean {

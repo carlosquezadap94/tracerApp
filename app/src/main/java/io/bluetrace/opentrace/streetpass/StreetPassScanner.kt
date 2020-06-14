@@ -8,7 +8,7 @@ import android.os.Handler
 import io.bluetrace.opentrace.Utils
 import io.bluetrace.opentrace.bluetooth.BLEScanner
 import io.bluetrace.opentrace.services.BluetoothMonitoringService.Companion.infiniteScanning
-import io.bluetrace.opentrace.status.Status
+import io.bluetrace.opentrace.persistence.status.Status
 import kotlin.properties.Delegates
 
 class StreetPassScanner constructor(
@@ -38,7 +38,8 @@ class StreetPassScanner constructor(
 
     fun startScan() {
 
-        var statusRecord = Status("Scanning Started")
+        var statusRecord =
+            Status("Scanning Started")
         Utils.broadcastStatusReceived(context, statusRecord)
 
         scanner.startScan(scanCallback)
@@ -57,7 +58,8 @@ class StreetPassScanner constructor(
     fun stopScan() {
         //only stop if scanning was successful - kinda.
         if (scannerCount > 0) {
-            var statusRecord = Status("Scanning Stopped")
+            var statusRecord =
+                Status("Scanning Stopped")
             Utils.broadcastStatusReceived(context, statusRecord)
             scannerCount--
             scanner.stopScan()

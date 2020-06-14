@@ -49,11 +49,7 @@ class BLEScanner constructor(context: Context, uuid: String, reportDelay: Long) 
         scanner?.startScan(filters, settings, scanCallback)
     }
 
-    fun flush() {
-        scanCallback?.let {
-            scanner?.flushPendingScanResults(scanCallback)
-        }
-    }
+
 
     fun stopScan() {
 

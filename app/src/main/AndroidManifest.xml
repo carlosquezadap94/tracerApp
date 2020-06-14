@@ -22,7 +22,7 @@
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
-        <activity android:name=".principal.StartActivity">
+        <activity android:name=".ui.StartActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -59,10 +59,7 @@
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/notification_tint" />
 
-        <activity
-            android:name=".permissions.RequestFileWritePermission"
-            android:launchMode="singleTask"
-            android:theme="@style/Theme.AppCompat.Transparent.NoActionBar" />
+
 
         <service
             android:name=".services.BluetoothMonitoringService"
@@ -70,11 +67,6 @@
 
 
 
-        <receiver android:name=".receivers.UpgradeReceiver">
-            <intent-filter>
-                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
-            </intent-filter>
-        </receiver>
     </application>
 
 </manifest>

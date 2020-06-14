@@ -28,9 +28,6 @@ class Work constructor(
         timeStamp = System.currentTimeMillis()
     }
 
-    fun isSafelyCompleted(): Boolean {
-        return (checklist.connected.status && checklist.readCharacteristic.status && checklist.writeCharacteristic.status && checklist.disconnected.status) || checklist.skipped.status
-    }
 
     fun isCriticalsCompleted(): Boolean {
         return (checklist.connected.status && checklist.readCharacteristic.status && checklist.writeCharacteristic.status) || checklist.skipped.status

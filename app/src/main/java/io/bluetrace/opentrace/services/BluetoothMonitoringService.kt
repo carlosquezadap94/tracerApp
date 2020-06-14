@@ -28,16 +28,15 @@ import io.bluetrace.opentrace.bluetooth.gatt.ACTION_RECEIVED_STREETPASS
 import io.bluetrace.opentrace.bluetooth.gatt.STATUS
 import io.bluetrace.opentrace.bluetooth.gatt.STREET_PASS
 import io.bluetrace.opentrace.notifications.NotificationTemplates
-import io.bluetrace.opentrace.permissions.RequestFileWritePermission
-import io.bluetrace.opentrace.status.Status
-import io.bluetrace.opentrace.status.persistence.StatusRecord
-import io.bluetrace.opentrace.status.persistence.StatusRecordStorage
+import io.bluetrace.opentrace.persistence.status.Status
+import io.bluetrace.opentrace.persistence.status.StatusRecord
+import io.bluetrace.opentrace.persistence.status.StatusRecordStorage
 import io.bluetrace.opentrace.streetpass.ConnectionRecord
 import io.bluetrace.opentrace.streetpass.StreetPassScanner
 import io.bluetrace.opentrace.streetpass.StreetPassServer
 import io.bluetrace.opentrace.streetpass.StreetPassWorker
-import io.bluetrace.opentrace.streetpass.persistence.StreetPassRecord
-import io.bluetrace.opentrace.streetpass.persistence.StreetPassRecordStorage
+import io.bluetrace.opentrace.persistence.streetpass.StreetPassRecord
+import io.bluetrace.opentrace.persistence.streetpass.StreetPassRecordStorage
 import java.lang.ref.WeakReference
 import kotlin.coroutines.CoroutineContext
 
@@ -93,8 +92,7 @@ class BluetoothMonitoringService : Service(), CoroutineScope {
         if (BuildConfig.DEBUG) {
             if (!hasWritePermissions()) {
 
-                //start write permission activity
-                acquireWritePermission()
+
                 stopSelf()
                 return START_STICKY
             }
@@ -141,8 +139,12 @@ class BluetoothMonitoringService : Service(), CoroutineScope {
         unregisterReceivers()
         registerReceivers()
 
-        streetPassRecordStorage = StreetPassRecordStorage(this.applicationContext)
-        statusRecordStorage = StatusRecordStorage(this.applicationContext)
+        streetPassRecordStorage =
+            StreetPassRecordStorage(
+                this.applicationContext
+            )
+        statusRecordStorage =
+            StatusRecordStorage(this.applicationContext)
 
         setupNotifications()
         functions = FirebaseFunctions.getInstance(BuildConfig.FIREBASE_REGION)
@@ -211,11 +213,7 @@ class BluetoothMonitoringService : Service(), CoroutineScope {
         return EasyPermissions.hasPermissions(this.applicationContext, *perms)
     }
 
-    private fun acquireWritePermission() {
-        val intent = Intent(this.applicationContext, RequestFileWritePermission::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        startActivity(intent)
-    }
+
 
     private fun isBluetoothEnabled(): Boolean {
         var btOn = false
@@ -247,8 +245,7 @@ class BluetoothMonitoringService : Service(), CoroutineScope {
         if (BuildConfig.DEBUG) {
             if (!hasWritePermissions()) {
 
-                //start write permission activity
-                acquireWritePermission()
+
                 stopSelf()
                 return
             }
@@ -319,17 +316,7 @@ class BluetoothMonitoringService : Service(), CoroutineScope {
     }
 
     private fun actionStart() {
-//        broadcastMessage = it
         setupCycles()
-//        TempIDManager.getTemporaryIDs(this, functions)
-//            .addOnCompleteListener {
-//                CentralLog.d(TAG, "Get TemporaryIDs completed")
-//                //this will run whether it starts or fails.
-//                var fetch = TempIDManager.retrieveTemporaryID(this.applicationContext)
-//                fetch?.let {
-//
-//                }
-//            }
     }
 
 
@@ -338,25 +325,7 @@ class BluetoothMonitoringService : Service(), CoroutineScope {
     }
 
     private fun actionScan() {
-
         performScan()
-
-
-//        if (TempIDManager.needToUpdate(this.applicationContext) || broadcastMessage == null) {
-//            CentralLog.i(TAG, "[TempID] Need to update TemporaryID in actionScan")
-//            //need to pull new BM
-//            TempIDManager.getTemporaryIDs(this.applicationContext, functions)
-//                .addOnCompleteListener {
-//                    //this will run whether it starts or fails.
-//                    var fetch = TempIDManager.retrieveTemporaryID(this.applicationContext)
-//                    fetch?.let {
-//                        broadcastMessage = it
-//                        performScan()
-//                    }
-//                }
-//        } else {
-//            CentralLog.i(TAG, "[TempID] Don't need to update Temp ID in actionScan")
-//        }
     }
 
     private fun actionAdvertise() {
@@ -570,15 +539,16 @@ class BluetoothMonitoringService : Service(), CoroutineScope {
 
 
                 if (connRecord.msg.isNotEmpty()) {
-                    val record = StreetPassRecord(
-                        v = connRecord.version,
-                        msg = connRecord.msg,
-                        org = connRecord.org,
-                        modelP = connRecord.peripheral.modelP,
-                        modelC = connRecord.central.modelC,
-                        rssi = connRecord.rssi,
-                        txPower = connRecord.txPower
-                    )
+                    val record =
+                        StreetPassRecord(
+                            v = connRecord.version,
+                            msg = connRecord.msg,
+                            org = connRecord.org,
+                            modelP = connRecord.peripheral.modelP,
+                            modelC = connRecord.central.modelC,
+                            rssi = connRecord.rssi,
+                            txPower = connRecord.txPower
+                        )
 
                     launch {
 
@@ -598,7 +568,10 @@ class BluetoothMonitoringService : Service(), CoroutineScope {
                 var statusRecord: Status = intent.getParcelableExtra(STATUS)
 
                 if (statusRecord.msg.isNotEmpty()) {
-                    val statusRecord = StatusRecord(statusRecord.msg)
+                    val statusRecord =
+                        StatusRecord(
+                            statusRecord.msg
+                        )
                     launch {
                         statusRecordStorage.saveRecord(statusRecord)
                     }

@@ -12,7 +12,7 @@ import io.bluetrace.opentrace.Utils
 import io.bluetrace.opentrace.bluetooth.gatt.ACTION_DEVICE_PROCESSED
 import io.bluetrace.opentrace.bluetooth.gatt.CONNECTION_DATA
 import io.bluetrace.opentrace.bluetooth.gatt.DEVICE_ADDRESS
-import io.bluetrace.opentrace.protocol.BlueTrace
+import io.bluetrace.opentrace.bluetooth.protocol.BlueTrace
 import io.bluetrace.opentrace.services.BluetoothMonitoringService
 import io.bluetrace.opentrace.services.BluetoothMonitoringService.Companion.blacklistDuration
 import io.bluetrace.opentrace.services.BluetoothMonitoringService.Companion.maxQueueTime

@@ -5,7 +5,7 @@ import android.bluetooth.BluetoothGatt.GATT_FAILURE
 import android.bluetooth.BluetoothGatt.GATT_SUCCESS
 import android.content.Context
 import io.bluetrace.opentrace.Utils
-import io.bluetrace.opentrace.protocol.BlueTrace
+import io.bluetrace.opentrace.bluetooth.protocol.BlueTrace
 import java.util.*
 import kotlin.properties.Delegates
 
