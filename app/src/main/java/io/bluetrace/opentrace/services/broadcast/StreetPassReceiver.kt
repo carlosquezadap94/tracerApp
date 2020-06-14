@@ -8,6 +8,7 @@ import io.bluetrace.opentrace.bluetooth.gatt.STREET_PASS
 import io.bluetrace.opentrace.listeners.StorageListener
 import io.bluetrace.opentrace.persistence.streetpass.StreetPassRecord
 import io.bluetrace.opentrace.streetpass.ConnectionRecord
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 class StreetPassReceiver(listener : StorageListener) : BroadcastReceiver() {
@@ -33,7 +34,7 @@ class StreetPassReceiver(listener : StorageListener) : BroadcastReceiver() {
                         txPower = connRecord.txPower
                     )
 
-                launch {
+                GlobalScope.launch {
 
                     listener.onStreetPassRecordStorage(record)
                 }

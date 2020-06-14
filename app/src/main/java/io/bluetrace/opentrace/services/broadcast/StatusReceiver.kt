@@ -8,6 +8,7 @@ import io.bluetrace.opentrace.bluetooth.gatt.STATUS
 import io.bluetrace.opentrace.listeners.StorageListener
 import io.bluetrace.opentrace.persistence.status.Status
 import io.bluetrace.opentrace.persistence.status.StatusRecord
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 class StatusReceiver(listener: StorageListener) : BroadcastReceiver() {
@@ -25,7 +26,7 @@ class StatusReceiver(listener: StorageListener) : BroadcastReceiver() {
                     StatusRecord(
                         statusRecord.msg
                     )
-                launch {
+                GlobalScope.launch {
                     listener.onStatusRecordStorage(statusRecord)
                 }
             }

@@ -27,7 +27,9 @@ import io.bluetrace.opentrace.bluetooth.gatt.ACTION_RECEIVED_STREETPASS
 import io.bluetrace.opentrace.listeners.BluetoothStatusListener
 import io.bluetrace.opentrace.listeners.StorageListener
 import io.bluetrace.opentrace.notifications.NotificationTemplates
+import io.bluetrace.opentrace.persistence.status.StatusRecord
 import io.bluetrace.opentrace.persistence.status.StatusRecordStorage
+import io.bluetrace.opentrace.persistence.streetpass.StreetPassRecord
 import io.bluetrace.opentrace.streetpass.StreetPassScanner
 import io.bluetrace.opentrace.streetpass.StreetPassServer
 import io.bluetrace.opentrace.streetpass.StreetPassWorker
@@ -53,8 +55,8 @@ class BluetoothMonitoringService : Service(), CoroutineScope, BluetoothStatusLis
 
     var worker: StreetPassWorker? = null
 
-    private val streetPassReceiver = StreetPassReceiver()
-    private val statusReceiver = StatusReceiver()
+    private val streetPassReceiver = StreetPassReceiver(this)
+    private val statusReceiver = StatusReceiver(this)
     private val bluetoothStatusReceiver = BluetoothStatusReceiver(this)
 
     private lateinit var streetPassRecordStorage: StreetPassRecordStorage
@@ -538,11 +540,11 @@ class BluetoothMonitoringService : Service(), CoroutineScope, BluetoothStatusLis
         notifyLackingThings()
     }
 
-    override fun onStatusRecordStorage() {
-        TODO("Not yet implemented")
+    override suspend fun onStatusRecordStorage(statusRecord: StatusRecord) {
+        statusRecordStorage.saveRecord(statusRecord)
     }
 
-    override fun onStreetPassRecordStorage() {
-        TODO("Not yet implemented")
+    override suspend fun onStreetPassRecordStorage(streetPassRecord: StreetPassRecord) {
+        streetPassRecordStorage.saveRecord(streetPassRecord)
     }
 }
