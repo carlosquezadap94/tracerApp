@@ -22,7 +22,8 @@
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
-        <activity android:name=".ui.activity.RegisterActivity"></activity>
+        <activity android:name=".ui.activity.MainMenuActivity"></activity>
+        <activity android:name=".ui.activity.RegisterActivity" />
         <activity android:name=".ui.activity.IntroActivity" />
         <activity android:name=".ui.activity.VerificationActivity" />
         <activity android:name=".ui.activity.SplashActivity">
