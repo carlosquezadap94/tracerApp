@@ -1,7 +1,7 @@
 package io.bluetrace.opentrace.listeners
 
-import io.bluetrace.opentrace.persistence.status.StatusRecord
+import io.bluetrace.opentrace.infraestructura.db.entidades.StatusRecordEntity
 
 interface StorageStatusListener {
-    suspend fun onStatusRecordStorage(statusRecord: StatusRecord)
+    suspend fun onStatusRecordStorage(statusRecordEntity: StatusRecordEntity)
 }

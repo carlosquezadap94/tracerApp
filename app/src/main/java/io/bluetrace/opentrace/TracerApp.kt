@@ -4,19 +4,28 @@ import android.app.Application
 import android.content.Context
 import android.os.Build
 import android.provider.Settings
+import dagger.android.DispatchingAndroidInjector
+import dagger.android.HasAndroidInjector
+import io.bluetrace.opentrace.domain.di.DaggerComponentApp
 import io.bluetrace.opentrace.streetpass.bluetoothDeviceModels.CentralDevice
 import io.bluetrace.opentrace.streetpass.bluetoothDeviceModels.PeripheralDevice
+import javax.inject.Inject
 
-class TracerApp : Application() {
+class TracerApp : Application(), HasAndroidInjector {
+
+    @Inject
+    lateinit var androidInjector: DispatchingAndroidInjector<Any>
 
     override fun onCreate() {
         super.onCreate()
         AppContext = applicationContext
+
+
+        DaggerComponentApp.builder().application(this)
+            .build().inject(this)
     }
 
     companion object {
-
-        private val TAG = "TracerApp"
         const val ORG = BuildConfig.ORG
 
         lateinit var AppContext: Context
@@ -33,4 +42,6 @@ class TracerApp : Application() {
             return CentralDevice(Build.MODEL, "SELF")
         }
     }
+
+    override fun androidInjector() = androidInjector
 }
