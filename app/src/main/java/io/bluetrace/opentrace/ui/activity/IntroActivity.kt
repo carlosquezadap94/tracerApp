@@ -45,7 +45,7 @@ class IntroActivity : AppCompatActivity(), View.OnClickListener {
         when(v!!.id){
             R.id.buttonStart->{
                 startActivity(Intent(this,
-                    VerificationActivity::class.java))
+                    RegisterActivity::class.java))
             }
         }
     }

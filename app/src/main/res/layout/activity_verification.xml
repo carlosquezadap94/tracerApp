@@ -86,6 +86,7 @@
                     android:padding="10dp"
                     android:background="@drawable/editext_retangle_design"
                     android:layout_height="wrap_content"
+                    android:maxLength="1"
                     android:layout_margin="5dp"/>
 
                 <EditText
@@ -95,6 +96,7 @@
                     android:gravity="center"
                     android:background="@drawable/editext_retangle_design"
                     android:padding="10dp"
+                    android:maxLength="1"
                      android:layout_height="wrap_content"
                     android:layout_margin="5dp"
                     />
@@ -106,6 +108,7 @@
                     android:gravity="center"
                     android:background="@drawable/editext_retangle_design"
                     android:padding="10dp"
+                    android:maxLength="1"
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
                     />
@@ -117,6 +120,7 @@
                     android:gravity="center"
                     android:background="@drawable/editext_retangle_design"
                     android:padding="10dp"
+                    android:maxLength="1"
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
                     />
@@ -128,6 +132,7 @@
                     android:gravity="center"
                     android:background="@drawable/editext_retangle_design"
                     android:padding="10dp"
+                    android:maxLength="1"
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
                     />
@@ -139,6 +144,7 @@
                     android:gravity="center"
                     android:background="@drawable/editext_retangle_design"
                     android:padding="10dp"
+                    android:maxLength="1"
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
                     />

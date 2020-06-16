@@ -96,4 +96,11 @@
     <string name="introduce_codigo">Introduce el codigo que hemos enviado al numero de celular %1$s</string>
     <string name="expire_code">Tu codigo expirara en %1$s</string>
     <string name="verifica_el_codigo">Verifica el codigo</string>
+    <string name="validar">VALIDAR</string>
+    <string name="identificaci_n">Identificación</string>
+    <string name="entrar">Entrar</string>
+    <string name="n_mero_de_celular">Número de celular</string>
+    <string name="escribe_tu_celular">Escribe tu celular</string>
+    <string name="escribe_tu_numero_de_documento">Escribe tu numero de documento</string>
+    <string name="terminos_y_condiciones"><u>Terminos y condiciones</u></string>
 </resources>
