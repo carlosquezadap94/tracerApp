@@ -103,4 +103,7 @@
     <string name="escribe_tu_celular">Escribe tu celular</string>
     <string name="escribe_tu_numero_de_documento">Escribe tu numero de documento</string>
     <string name="terminos_y_condiciones"><u>Terminos y condiciones</u></string>
+    <string name="menu_home">Inicio</string>
+    <string name="menu_send_info">Enviar Información</string>
+    <string name="menu_profile">Mi perfil</string>
 </resources>
