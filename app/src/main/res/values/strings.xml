@@ -89,6 +89,11 @@
 
     <string name="share_message">Join me in stopping the spread of COVID-19! Download OpenTrace. Go to: https://bluetrace.io</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <!-- TODO: Remove or change this placeholder text -->z
+    <string name="cambiar_numero"><u>Cambiar numero</u></string>
+    <string name="reenviar"><u>Reenviar</u></string>
+    <string name="empezar">EMPEZAR</string>
+    <string name="introduce_codigo">Introduce el codigo que hemos enviado al numero de celular %1$s</string>
+    <string name="expire_code">Tu codigo expirara en %1$s</string>
+    <string name="verifica_el_codigo">Verifica el codigo</string>
 </resources>

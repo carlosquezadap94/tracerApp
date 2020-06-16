@@ -9,14 +9,14 @@ import androidx.core.content.ContextCompat
 import io.bluetrace.opentrace.R
 import io.bluetrace.opentrace.services.Constants.Companion.PENDING_ACTIVITY
 import io.bluetrace.opentrace.services.Constants.Companion.PENDING_WIZARD_REQ_CODE
-import io.bluetrace.opentrace.ui.StartActivity
+import io.bluetrace.opentrace.ui.activity.IntroActivity
 
 class NotificationTemplates {
 
     companion object {
         fun getRunningNotification(context: Context, channel: String): Notification {
 
-            var intent = Intent(context, StartActivity::class.java)
+            var intent = Intent(context, IntroActivity::class.java)
 
             val activityPendingIntent = PendingIntent.getActivity(
                 context, PENDING_ACTIVITY,
@@ -40,7 +40,7 @@ class NotificationTemplates {
             return builder.build()
         }
         fun lackingThingsNotification(context: Context, channel: String): Notification {
-            var intent = Intent(context, StartActivity::class.java)
+            var intent = Intent(context, IntroActivity::class.java)
             intent.putExtra("page", 3)
 
             val activityPendingIntent = PendingIntent.getActivity(

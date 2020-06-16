@@ -13,19 +13,20 @@ import android.os.Build
 import android.os.IBinder
 import android.os.PowerManager
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import com.google.firebase.functions.FirebaseFunctions
 import io.bluetrace.opentrace.BuildConfig
 import io.bluetrace.opentrace.Utils
 import io.bluetrace.opentrace.bluetooth.BLEAdvertiser
 import io.bluetrace.opentrace.bluetooth.gatt.ACTION_RECEIVED_STATUS
 import io.bluetrace.opentrace.bluetooth.gatt.ACTION_RECEIVED_STREETPASS
+import io.bluetrace.opentrace.infraestructura.db.entidades.StatusRecordEntity
+import io.bluetrace.opentrace.infraestructura.db.entidades.StreetPassRecordEntity
 import io.bluetrace.opentrace.listeners.BluetoothStatusListener
 import io.bluetrace.opentrace.listeners.StorageRecordListener
 import io.bluetrace.opentrace.listeners.StorageStatusListener
+import io.bluetrace.opentrace.logging.CentralLog
 import io.bluetrace.opentrace.notifications.NotificationTemplates
-import io.bluetrace.opentrace.persistence.status.StatusRecord
+import io.bluetrace.opentrace.permissions.RequestFileWritePermission
 import io.bluetrace.opentrace.persistence.status.StatusRecordStorage
-import io.bluetrace.opentrace.persistence.streetpass.StreetPassRecord
 import io.bluetrace.opentrace.persistence.streetpass.StreetPassRecordStorage
 import io.bluetrace.opentrace.services.Constants.Companion.CHANNEL_ID
 import io.bluetrace.opentrace.services.Constants.Companion.CHANNEL_SERVICE
@@ -42,11 +43,11 @@ import io.bluetrace.opentrace.services.Constants.Companion.minScanInterval
 import io.bluetrace.opentrace.services.Constants.Companion.purgeInterval
 import io.bluetrace.opentrace.services.Constants.Companion.purgeTTL
 import io.bluetrace.opentrace.services.Constants.Companion.scanDuration
+import io.bluetrace.opentrace.services.enums.Command
+import io.bluetrace.opentrace.services.enums.NotificationState
 import io.bluetrace.opentrace.services.receiver.BluetoothStatusReceiver
 import io.bluetrace.opentrace.services.receiver.StatusReceiver
 import io.bluetrace.opentrace.services.receiver.StreetPassReceiver
-import io.bluetrace.opentrace.services.enums.Command
-import io.bluetrace.opentrace.services.enums.NotificationState
 import io.bluetrace.opentrace.streetpass.StreetPassScanner
 import io.bluetrace.opentrace.streetpass.StreetPassServer
 import io.bluetrace.opentrace.streetpass.StreetPassWorker
@@ -80,7 +81,6 @@ class BluetoothMonitoringService : Service(), CoroutineScope, BluetoothStatusLis
 
     private var job: Job = Job()
 
-    private lateinit var functions: FirebaseFunctions
 
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Main + job
@@ -145,7 +145,7 @@ class BluetoothMonitoringService : Service(), CoroutineScope, BluetoothStatusLis
     private fun setup() {
         val pm = getSystemService(Context.POWER_SERVICE) as PowerManager
 
-
+        CentralLog.setPowerManager(pm)
 
         commandHandler = CommandHandler(WeakReference(this))
 
@@ -165,7 +165,6 @@ class BluetoothMonitoringService : Service(), CoroutineScope, BluetoothStatusLis
             StatusRecordStorage(this.applicationContext)
 
         setupNotifications()
-        functions = FirebaseFunctions.getInstance(BuildConfig.FIREBASE_REGION)
     }
 
     private fun teardown() {
@@ -231,6 +230,12 @@ class BluetoothMonitoringService : Service(), CoroutineScope, BluetoothStatusLis
         return EasyPermissions.hasPermissions(this.applicationContext, *perms)
     }
 
+    private fun acquireWritePermission() {
+        val intent = Intent(this.applicationContext, RequestFileWritePermission::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(intent)
+    }
+
     private fun isBluetoothEnabled(): Boolean {
         var btOn = false
         val bluetoothAdapter: BluetoothAdapter? by lazy(LazyThreadSafetyMode.NONE) {
@@ -244,7 +249,7 @@ class BluetoothMonitoringService : Service(), CoroutineScope, BluetoothStatusLis
         return btOn
     }
 
-    fun runService(cmd: Command?) {
+     fun runService(cmd: Command?) {
 
         var doWork = true
 
@@ -512,11 +517,11 @@ class BluetoothMonitoringService : Service(), CoroutineScope, BluetoothStatusLis
         notifyLackingThings()
     }
 
-    override suspend fun onStatusRecordStorage(statusRecord: StatusRecord) {
-        statusRecordStorage.saveRecord(statusRecord)
+    override suspend fun onStatusRecordStorage(statusRecordEntity: StatusRecordEntity) {
+        statusRecordStorage.saveRecord(statusRecordEntity)
     }
 
-    override suspend fun onStreetPassRecordStorage(streetPassRecord: StreetPassRecord) {
-        streetPassRecordStorage.saveRecord(streetPassRecord)
+    override suspend fun onStreetPassRecordStorage(streetPassRecordEntity: StreetPassRecordEntity) {
+        streetPassRecordStorage.saveRecord(streetPassRecordEntity)
     }
 }

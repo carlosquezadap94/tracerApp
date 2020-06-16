@@ -7,7 +7,7 @@ import io.bluetrace.opentrace.bluetooth.gatt.ACTION_RECEIVED_STATUS
 import io.bluetrace.opentrace.bluetooth.gatt.STATUS
 import io.bluetrace.opentrace.listeners.StorageStatusListener
 import io.bluetrace.opentrace.persistence.status.Status
-import io.bluetrace.opentrace.persistence.status.StatusRecord
+import io.bluetrace.opentrace.infraestructura.db.entidades.StatusRecordEntity
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
@@ -20,7 +20,7 @@ class StatusReceiver(private val statusListener: StorageStatusListener) : Broadc
 
             if (statusRecord.msg.isNotEmpty()) {
                 val statusRecord =
-                    StatusRecord(
+                    StatusRecordEntity(
                         statusRecord.msg
                     )
                 GlobalScope.launch {
