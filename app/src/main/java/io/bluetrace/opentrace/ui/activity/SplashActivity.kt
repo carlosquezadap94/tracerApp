@@ -8,7 +8,6 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.airbnb.lottie.LottieAnimationView
 import io.bluetrace.opentrace.R
-import io.bluetrace.opentrace.ui.StartActivity
 
 class SplashActivity : AppCompatActivity() {
 
@@ -32,8 +31,9 @@ class SplashActivity : AppCompatActivity() {
             override fun onAnimationEnd(animation: Animator) {
                 Log.e("Animation:", "end")
 
-                val startActivityIntent = Intent(context, StartActivity::class.java)
+                val startActivityIntent = Intent(context, IntroActivity::class.java)
                 startActivity(startActivityIntent)
+                finish()
             }
 
             override fun onAnimationCancel(animation: Animator) {
