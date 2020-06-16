@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/action_search"
+    <item android:id="@+id/action_home"
         android:title="@string/menu_home"
         android:icon="@drawable/circle_menu_item" />
-    <item android:id="@+id/action_settings"
+    <item android:id="@+id/action_send_info"
         android:title="@string/menu_send_info"
         android:icon="@drawable/circle_menu_item" />
-    <item android:id="@+id/action_navigation"
+    <item android:id="@+id/action_profile"
         android:title="@string/menu_profile"
         android:icon="@drawable/circle_menu_item" />
 </menu>
