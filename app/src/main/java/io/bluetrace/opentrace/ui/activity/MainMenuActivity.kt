@@ -23,6 +23,10 @@ class MainMenuActivity : AppCompatActivity(), BottomNavigationView.OnNavigationI
         setContentView(R.layout.activity_main_menu)
         createMenuFragments()
         addFragments()
+        configBottomNavigationView()
+    }
+
+    private fun configBottomNavigationView() {
         bottomNavigationView.setOnNavigationItemSelectedListener(this)
     }
 
