@@ -92,13 +92,24 @@
                     android:textSize="18sp" />
 
                 <TextView
+                    android:id="@+id/textView12"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="30sp"
+                    android:layout_weight="1"
+                    android:letterSpacing="1"
+                    android:text="111111"
+                    android:textSize="25sp" />
+
+                <TextView
                     android:id="@+id/textView15"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="30dp"
                     android:layout_weight="1"
                     android:text="Hay un error en la generación del código"
-                    android:textColor="#FF585D" />
+                    android:textColor="#FF585D"
+                    android:visibility="gone" />
 
                 <Button
                     android:id="@+id/button"
