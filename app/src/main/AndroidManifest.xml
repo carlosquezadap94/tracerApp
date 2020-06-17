@@ -23,9 +23,15 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
         <activity android:name=".ui.activity.MainMenuActivity"></activity>
-        <activity android:name=".ui.activity.RegisterActivity" />
+        <activity android:name=".ui.activity.RegisterActivity"
+            android:windowSoftInputMode="adjustResize"
+            android:theme="@style/AppTheme.NoActionBar.NoFullScreen"
+            />
         <activity android:name=".ui.activity.IntroActivity" />
-        <activity android:name=".ui.activity.VerificationActivity" />
+        <activity android:name=".ui.activity.VerificationActivity"
+            android:windowSoftInputMode="adjustResize"
+            android:theme="@style/AppTheme.NoActionBar.NoFullScreen"
+            />
         <activity android:name=".ui.activity.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -9,7 +9,6 @@
     <color name="dark">#17363d</color>
     <color name="lighter">#3d5c63</color>
     <color name="off_white">#F5F2D0</color>
-    <color name="white">#FFFFFF</color>
 
     <color name="transparent">#00000000</color>
     <color name="black">#000000</color>
@@ -47,4 +46,23 @@
     <color name="light_yellow">#FFF5DC</color>
 
     <color name="blue_update">#0030A1</color>
+    <color name="red_bar">#ff0000</color>
+    <color name="yellow_bar">#e5be01</color>
+    <color name="green_bar">#008f39</color>
+    <color name="gray_ligth_bar">#eaeaea</color>
+
+
+
+    <!-- introduccion -->
+    <color name="white">#FFFFFF</color>
+    <color name="intro_black">#263238</color>
+    <color name="intro_gray">#768692</color>
+    <color name="intro_blue">#0033A0</color>
+
+
+    <!-- Registro -->
+    <color name="register_gray_ligth">#ECF0F1</color>
+    <color name="verification_blue">#0033A0</color>
+
+
 </resources>

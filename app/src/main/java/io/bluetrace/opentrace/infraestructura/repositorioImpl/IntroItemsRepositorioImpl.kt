@@ -12,20 +12,21 @@ class IntroItemsRepositorioImpl @Inject constructor(): IRepositoryIntroItems {
         var introModelList = ArrayList<IntroItemModel>();
 
         val propositoApp = IntroItemModel("Proposito de la aplicacion",
-            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.  ",
-            "")
+            "SURA te acompaña a ti y a tus compañeros, entre todos nos cuidamos.",
+            "proposito"
+            )
 
         val para_usar = IntroItemModel("Para usar",
-            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.  ",
-            "")
+            "Debes tener el celular con el bluetooth prendido.",
+            "usar_la_app")
 
         val corre_la_voz = IntroItemModel("Corre la voz en tu trabajo",
-            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.  ",
-            "")
+            "Cuéntale a tus compañeros que descarguen la App, porque juntos hacemos más.",
+            "corre_la_voz")
 
         val entre_todos = IntroItemModel("Entre todos nos protegemos",
-            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.  ",
-            "")
+            "En caso de adquirir el COVID-19, podremos con los datos de tu bluetooth hacer un cerco epidemiológico.  ",
+            "entre_todos")
 
         introModelList.add(propositoApp)
         introModelList.add(para_usar)

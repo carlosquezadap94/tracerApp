@@ -221,6 +221,8 @@ dependencies {
     kapt "com.google.dagger:dagger-android-processor:$dagger_version"
     kaptTest "com.google.dagger:dagger-compiler:$dagger_version"
 
+    implementation 'com.github.jakob-grabner:Circle-Progress-View:1.4'
+
 
     //Dexter
     implementation 'com.karumi:dexter:6.2.0'

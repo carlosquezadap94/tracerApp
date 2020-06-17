@@ -21,5 +21,11 @@ class IntroItemAdapter(var items: ArrayList<IntroItemModel>, val context: Contex
     override fun onBindViewHolder(holder: IntroItemViewHolder, position: Int) {
         holder.tv_itemTitle.text = items.get(position).title
         holder.tv_itemSubTitle.text = items.get(position).subTitle
+
+        holder.imageView_introItem.setImageResource(context
+            .resources
+            .getIdentifier(items.get(position)
+                .image,"drawable",
+                context.getPackageName()))
     }
 }

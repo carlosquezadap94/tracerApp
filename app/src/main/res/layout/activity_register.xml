@@ -7,19 +7,28 @@
     android:background="@color/white"
     tools:context="io.bluetrace.opentrace.ui.activity.VerificationActivity">
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline3"
+    <ImageView
+        android:id="@+id/imageView4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.3" />
+        app:layout_constraintBottom_toTopOf="@+id/guideline10"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:src="@drawable/ic_logo_sura"
+        />
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline4"
+    <TextView
+        android:id="@+id/textView_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.8" />
+        android:text="@string/bienvenido"
+        android:textColor="@color/intro_black"
+        android:textSize="@dimen/title_size"
+        app:layout_constraintBottom_toTopOf="@+id/guideline3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/guideline10" />
 
     <Button
         android:id="@+id/buttonEnter"
@@ -27,8 +36,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="50dp"
         android:layout_marginEnd="50dp"
-        android:background="@drawable/button_gray_design"
-        android:text="@string/entrar"
+        android:background="@drawable/button_blue_design"
+        android:text="@string/registrarme"
         android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -36,26 +45,48 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/guideline4" />
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        app:layout_constraintBottom_toTopOf="@+id/guideline3"
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_gravity="center"
+        android:orientation="horizontal"
+        android:layout_margin="25dp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline4"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:srcCompat="@tools:sample/avatars" />
+        app:layout_constraintTop_toTopOf="@+id/guideline5">
+
+
+        <CheckBox
+            android:id="@+id/checkbox_aceptar_terminos"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:elevation="10dp"
+            />
+
+        <TextView
+            android:id="@+id/textView_terminos"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="3dp"
+            android:textSize="14dp"
+            android:text="@string/aceptar_terminos_y_condiciones"
+            tools:layout_editor_absoluteX="206dp"
+            tools:layout_editor_absoluteY="528dp" />
+
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:orientation="vertical"
         app:layout_constraintBottom_toTopOf="@+id/guideline5"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/guideline3">
+        app:layout_constraintTop_toTopOf="@+id/guideline3"
+        app:layout_constraintVertical_bias="0.92">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -71,50 +102,64 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="15dp"
                 android:text="@string/identificaci_n"
+                android:textColor="@color/intro_blue"
+                android:textSize="14dp"
                 android:textStyle="bold" />
 
-            <LinearLayout
+
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/editext_retangle_design"
                 android:orientation="horizontal"
-                android:padding="1dp"
-                android:weightSum="1">
+                android:weightSum="1"
+                app:cardCornerRadius="15dp"
+                app:cardElevation="5dp"
+                app:cardUseCompatPadding="true">
 
-                <TextView
-                    android:layout_width="0dp"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.2"
-                    android:background="@drawable/editext_unborders_design"
-                    android:padding="18dp"
-                    android:text="CC"
-                    android:textSize="18sp">
+                    android:orientation="horizontal"
+                    android:padding="1dp"
+                    android:weightSum="1">
 
-                </TextView>
+                    <Spinner
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.2"
+                        android:background="@drawable/editext_unborders_design"
+                        android:padding="18dp"
+                        android:text="CC"
+                        android:textSize="18sp">
 
-                <View
-                    android:layout_width="1dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginBottom="4dp"
-                    android:background="@color/black" />
+                    </Spinner>
 
-
-                <EditText
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.8"
-                    android:background="@drawable/editext_unborders_design"
-                    android:hint="@string/escribe_tu_numero_de_documento"
-                    android:inputType="number|text"
-                    android:padding="18dp"
-                    android:textSize="16sp">
-
-                </EditText>
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginBottom="4dp"
+                        android:background="@color/register_gray_ligth" />
 
 
-            </LinearLayout>
+                    <EditText
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.8"
+                        android:background="@drawable/editext_unborders_design"
+                        android:hint="@string/escribe_tu_numero_de_documento"
+                        android:inputType="number"
+                        android:padding="18dp"
+                        android:maxLength="10"
+                        android:textColorHint="@color/intro_gray"
+                        android:textSize="14dp">
 
+                    </EditText>
+
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
 
         </LinearLayout>
 
@@ -131,56 +176,74 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="15dp"
-                android:text="@string/n_mero_de_celular"
+                android:text="@string/celular"
+                android:textColor="@color/intro_blue"
+                android:textSize="14dp"
                 android:textStyle="bold" />
 
-            <LinearLayout
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/editext_retangle_design"
-                android:orientation="horizontal"
-                android:padding="1dp"
-                android:weightSum="1">
+                app:cardCornerRadius="15dp"
+                app:cardElevation="5dp"
+                app:cardUseCompatPadding="true">
 
-                <TextView
-                    android:layout_width="0dp"
+
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.2"
-                    android:background="@drawable/editext_unborders_design"
-                    android:padding="18dp"
-                    android:text="+57"
-                    android:textSize="18sp">
+                    android:orientation="horizontal"
+                    android:padding="1dp"
+                    android:weightSum="1">
 
-                </TextView>
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.2"
+                        android:background="@drawable/editext_unborders_design"
+                        android:padding="18dp"
+                        android:text="@string/_57"
+                        android:textColor="@color/intro_black"
+                        android:textSize="17dp">
 
-                <View
-                    android:layout_width="1dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginBottom="4dp"
-                    android:background="@color/black" />
+                    </TextView>
 
-
-                <EditText
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.8"
-                    android:background="@drawable/editext_unborders_design"
-                    android:hint="@string/escribe_tu_celular"
-                    android:inputType="number|text"
-                    android:padding="18dp"
-                    android:textSize="16sp">
-
-                </EditText>
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginBottom="4dp"
+                        android:background="@color/register_gray_ligth" />
 
 
-            </LinearLayout>
+                    <EditText
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.8"
+                        android:background="@drawable/editext_unborders_design"
+                        android:hint="@string/n_mero_de_celular"
+                        android:inputType="number"
+                        android:padding="18dp"
+                        android:maxLength="10"
+                        android:textColorHint="@color/intro_gray"
+                        android:textSize="14dp">
+
+                    </EditText>
 
 
+                </LinearLayout>
+
+
+            </androidx.cardview.widget.CardView>
         </LinearLayout>
-
-
     </LinearLayout>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline10"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.1" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline5"
@@ -189,37 +252,18 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.6" />
 
-
-    <LinearLayout
-        android:layout_width="0dp"
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline3"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="center"
-        app:layout_constraintBottom_toTopOf="@+id/guideline4"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/guideline5">
+        app:layout_constraintGuide_percent="0.18" />
 
-
-        <CheckBox
-            android:id="@+id/checkBoxAceptar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Acepto"
-            tools:layout_editor_absoluteX="78dp"
-            tools:layout_editor_absoluteY="522dp" />
-
-        <TextView
-            android:id="@+id/textView_terminos"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/terminos_y_condiciones"
-            tools:layout_editor_absoluteX="206dp"
-            tools:layout_editor_absoluteY="528dp"
-            android:layout_marginLeft="3dp"
-            android:textStyle="bold"
-            />
-
-    </LinearLayout>
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.8" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

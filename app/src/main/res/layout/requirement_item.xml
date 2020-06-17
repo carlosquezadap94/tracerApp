@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardCornerRadius="5dp"
+    app:cardElevation="5dp"
+    android:layout_marginLeft="15dp"
+    android:layout_marginRight="15dp"
+    app:cardUseCompatPadding="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:padding="10dp"
+        android:weightSum="1"
+        >
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.2"
+            android:gravity="center"
+            android:padding="15dp"
+            android:background="@drawable/requirement_image_background"
+            >
+            <ImageView
+                android:id="@+id/iamgeView_requirement"
+                android:layout_width="10dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_bluetooth"
+                />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/textView_requirement"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="¿hiciste la encuesta de síntomas?"
+            android:layout_marginLeft="15dp"
+            android:textColor="@color/intro_black"
+            android:layout_weight="0.6"/>
+
+        <Switch
+            android:id="@+id/switch_requirement"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.2"/>
+
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

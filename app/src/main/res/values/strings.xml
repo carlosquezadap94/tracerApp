@@ -27,7 +27,7 @@
 
     <string name="setup_app_permission">\Set up app permissions</string>
     <string name="setup_app_permission_title">Select \'<b>Yes</b>\' or \'<b>Allow</b>\' for the next few screens to set up.</string>
-    <string name="bluetooth">1. Bluetooth</string>
+
     <string name="location_permissions">2. Location Permissions</string>
     <string name="battery_optimiser_opt">3. Battery Optimiser</string>
     <string name="notes">Android needs Location Permissions for Bluetooth to work. We don\'t have access to your physical location.</string>
@@ -89,21 +89,36 @@
 
     <string name="share_message">Join me in stopping the spread of COVID-19! Download OpenTrace. Go to: https://bluetrace.io</string>
 
-    <!-- TODO: Remove or change this placeholder text -->z
-    <string name="cambiar_numero"><u>Cambiar numero</u></string>
-    <string name="reenviar"><u>Reenviar</u></string>
+    <!-- TODO: Remove or change this placeholder text -->
+
+    <string name="porcent">%</string>
+    <string name="cambiar_numero"><u>Cambiar número</u></string>
+    <string name="reenviar"><u>Reenviar código</u></string>
     <string name="empezar">EMPEZAR</string>
     <string name="introduce_codigo">Introduce el codigo que hemos enviado al numero de celular %1$s</string>
     <string name="expire_code">Tu codigo expirara en %1$s</string>
     <string name="verifica_el_codigo">Verifica el codigo</string>
     <string name="validar">VALIDAR</string>
     <string name="identificaci_n">Identificación</string>
-    <string name="entrar">Entrar</string>
+    <string name="registrarme">Registrarme</string>
     <string name="n_mero_de_celular">Número de celular</string>
-    <string name="escribe_tu_celular">Escribe tu celular</string>
-    <string name="escribe_tu_numero_de_documento">Escribe tu numero de documento</string>
-    <string name="terminos_y_condiciones"><u>Terminos y condiciones</u></string>
+    <string name="celular">Celular</string>
+    <string name="escribe_tu_numero_de_documento">Número de documento</string>
+    <string name="aceptar_terminos_y_condiciones">Acepto los términos de uso y el tratamiento de datos personales para contribuir a la estrategia de prevención de SURA</string>
     <string name="menu_home">Inicio</string>
     <string name="menu_send_info">Enviar Información</string>
     <string name="menu_profile">Mi perfil</string>
+    <string name="juntos_hacemos_m_s">Juntos hacemos más</string>
+    <string name="bienvenido">Bienvenido</string>
+    <string name="_57">+57</string>
+    <string name="code_cel">Hemos enviado un código al celular \n%1$s</string>
+    <string name="el_c_digo_no_coincide">El código no coincide</string>
+    <string name="lista_de_requisitos">Lista de requisitos</string>
+    <string name="hola">Hola</string>
+    <string name="completar_requisitos">Debes completar los requisitos.</string>
+    <string name="bluetooth">Bluetooth</string>
+    <string name="notifications">Noticaciones</string>
+    <string name="gps">GPS</string>
+    <string name="question_survey">¿Hiciste la encuenta de síntomas?</string>
+
 </resources>

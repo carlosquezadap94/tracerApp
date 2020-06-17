@@ -9,6 +9,15 @@
         <item name="fontFamily">@font/font</item>
     </style>
 
+    <style name="AppTheme.NoActionBar.NoFullScreen" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowFullscreen">false</item>
+        <item name="android:fontFamily">@font/font</item>
+        <item name="fontFamily">@font/font</item>
+    </style>
+
+
     <style name="AppTheme.DebugNoActionBar" parent="Theme.AppCompat.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
