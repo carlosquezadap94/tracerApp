@@ -7,12 +7,12 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import io.bluetrace.opentrace.R
 
-class SendInfoFragment : Fragment() {
+class UploadDataFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.send_info_menu_fragment, container, false)
+        return inflater.inflate(R.layout.profile_menu_fragment, container, false)
     }
 }

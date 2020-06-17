@@ -106,8 +106,7 @@
     <string name="escribe_tu_numero_de_documento">Número de documento</string>
     <string name="aceptar_terminos_y_condiciones">Acepto los términos de uso y el tratamiento de datos personales para contribuir a la estrategia de prevención de SURA</string>
     <string name="menu_home">Inicio</string>
-    <string name="menu_send_info">Enviar Información</string>
-    <string name="menu_profile">Mi perfil</string>
+    <string name="menu_upload_data"></string>
     <string name="juntos_hacemos_m_s">Juntos hacemos más</string>
     <string name="bienvenido">Bienvenido</string>
     <string name="_57">+57</string>
